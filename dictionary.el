@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.37 2003/06/21 17:38:49 torsten Exp $
+;; $Id: dictionary.el,v 1.38 2004/03/05 08:08:30 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -154,6 +154,18 @@ by the choice value:
   "Should the dictionary command reuse previous dictionary buffers?"
   :group 'dictionary
   :type 'boolean)
+
+(defcustom dictionary-description-open-delimiter
+  ""
+  "The delimiter to display in front of the dictionaries description"
+  :group 'dictionary
+  :type 'string)
+
+(defcustom dictionary-description-close-delimiter
+  ""
+  "The delimiter to display after of the dictionaries description"
+  :group 'dictionary
+  :type 'string)
 
 ;; Define only when coding-system-list is available
 (when (fboundp 'coding-system-list)
@@ -633,7 +645,7 @@ This function knows about the special meaning of quotes (\")"
 	(progn
 	  (unless nomatching
 	    (beep)
-	    (insert "Word not found, maybe you look "
+	    (insert "Word not found, maybe you are looking "
 		    "for one of these words\n\n")
 	    (dictionary-do-matching word
 				    dictionary
@@ -717,7 +729,12 @@ This function knows about the special meaning of quotes (\")"
 (defun dictionary-display-word-entry (word dictionary description)
   "Insert an explanation for the current definition."
   (let ((start (point)))
-    (insert "From " description "[" dictionary "]:\n\n")
+    (insert "From " 
+	    dictionary-description-open-delimiter
+	    (dictionary-decode-charset description dictionary) 
+	    dictionary-description-close-delimiter
+	    " [" (dictionary-decode-charset dictionary dictionary) "]:"
+	    "\n\n")
     (put-text-property start (point) 'face 'dictionary-word-entry-face)))
 
 (defun dictionary-display-word-definition (reply word dictionary)

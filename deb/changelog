@@ -1,3 +1,12 @@
+dictionary (1.8.6-1) unstable; urgency=low
+
+  * added patch fixing the wrong display of dictionary description
+    (provided by Sergei Pokrovsky)
+  * added dictionary-description-open-delimiter and
+    dictionary-description-close-delimiter (suggested by Sergei Pokrovsky)
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Sat, 25 Sep 2004 17:05:51 +0200
+
 dictionary (1.8.5-1) unstable; urgency=low
 
   * added variable dictionary-use-single-buffer to allow selecting
