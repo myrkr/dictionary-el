@@ -10,6 +10,14 @@ XEMACS-PACKAGE=$(PACKAGE)-$(VERSION)-pkg.tar.gz
 SOURCES=dictionary.el connection.el link.el
 COMPILED=dictionary.elc connection.elc link.elc
 
+# For make dist
+LISP_FILES=connection.el dictionary.el link.el lpath.el dictionary-init.el \
+           install-package.el
+DOC_FILES=README GPL Makefile
+DEB_FILES=README.debian control copyright install.debian postinst \
+          prerm remove.debian rules changelog dirs
+DEB_DIR=deb
+
 .SUFFIXES: .elc .el
 
 .el.elc:
@@ -77,6 +85,20 @@ html: doc/dictionary
 
 doc/dictionary: doc/dictionary.texi
 	cd doc && makeinfo --html dictionary
+
+.PHONY: dist
+dist:
+	@[ -x debian ] || ln -s deb debian; \
+	VERSION=$$(dpkg-parsechangelog | perl -n -e '/^Version: (.*)-/ && print "$$1\n"'); \
+	DIR=$$(mktemp -d); \
+	DESTDIR="$$DIR/dictionary-$$VERSION"; \
+	install -d $$DESTDIR; \
+	install $(LISP_FILES) $(DOC_FILES) $$DESTDIR; \
+	mkdir $$DESTDIR/$(DEB_DIR); \
+	cd $(DEB_DIR) && install $(DEB_FILES) $$DESTDIR/$(DEB_DIR); \
+	tar czf $(CURDIR)/dictionary-$$VERSION.tar.gz -C $$DIR .; \
+	rm -r $$DIR; \
+	echo "dictionary-$$VERSION.tar.gz has been created"
 
 .PHONY: clean
 clean:

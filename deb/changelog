@@ -1,3 +1,10 @@
+dictionary (1.8.7-1) unstable; urgency=low
+
+  * fixed decoding problem when selecting dictionary (problem reported by
+    Kuno Strassmann)
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Sat,  2 Oct 2004 08:05:37 +0200
+
 dictionary (1.8.6-1) unstable; urgency=low
 
   * added patch fixing the wrong display of dictionary description

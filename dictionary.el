@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.38 2004/03/05 08:08:30 torsten Exp $
+;; $Id: dictionary.el 338 2004-10-02 06:04:54Z torsten $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -829,10 +829,12 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   "Display a single dictionary"
   (let* ((list (dictionary-split-string string))
 	 (dictionary (car list))
-	 (description (cadr list)))
+	 (description (cadr list))
+	 (translated (dictionary-decode-charset description dictionary)))
     (if dictionary
 	(progn
-	  (link-insert-link description 'dictionary-reference-face
+	  (link-insert-link (concat dictionary ": " translated)
+			    'dictionary-reference-face
 			    'dictionary-set-dictionary 
 			    (cons dictionary description)
 			    "Mouse-2 to select this dictionary")
