@@ -1,4 +1,4 @@
-# -*- Makefile -*- $Id: Makefile.upstream,v 1.5 2002/05/17 17:48:04 torsten Exp $
+# -*- Makefile -*- $Id: Makefile,v 1.8 2002/10/12 09:54:09 torsten Exp $
 
 EMACS=emacs
 

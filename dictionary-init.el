@@ -1,4 +1,4 @@
-;; $Id: dictionary-init.el,v 1.1 2001/10/14 14:46:16 torsten Exp $
+;; $Id: dictionary-init.el,v 1.6 2002/10/12 09:35:58 torsten Exp $
 ;; This file contains the autoload definitions that are used by the
 ;; debian package and can also be used in a standalone installation
 ;; The XEmacs package has some other means to create the autoload

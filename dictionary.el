@@ -2,7 +2,7 @@
 
  ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
  ;; Keywords: interface, dictionary
- ;; $Id: dictionary.el,v 1.38 2002/04/29 18:38:03 torsten Exp $
+ ;; $Id: dictionary.el,v 1.34 2002/10/12 09:53:32 torsten Exp $
 
  ;; This file is free software; you can redistribute it and/or modify
  ;; it under the terms of the GNU General Public License as published by
