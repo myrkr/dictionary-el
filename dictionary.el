@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.18 2001/05/13 07:46:37 torsten Exp torsten $
+;; $Id: dictionary.el,v 1.20 2001/06/27 16:44:27 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -182,6 +182,7 @@ one dictionary yields matches."
 ;; Basic function providing startup actions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;###autoload
 (defun dictionary-mode ()
   "This is a mode for searching a dictionary server implementing
 the protocol defined in RFC 2229.
@@ -227,6 +228,7 @@ This is a quick reference to this mode describing the default key bindings:
   (add-hook 'kill-buffer-hook 'dictionary-close t t)
   (run-hooks 'dictionary-mode-hook))
 
+;;;###autoload
 (defun dictionary ()
   "Create a new dictonary buffer and install dictionary-mode"
   (interactive)
@@ -796,6 +798,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 ;; User callable commands
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;###autoload
 (defun dictionary-search (word &optional dictionary)
   "Search the `word' in `dictionary' if given or in all if nil.  
 It presents the word at point as default input and allows editing it."
@@ -813,6 +816,7 @@ It presents the word at point as default input and allows editing it."
     (setq dictionary dictionary-default-dictionary))
   (dictionary-new-search (cons word dictionary)))
 
+;;;###autoload
 (defun dictionary-lookup-definition ()
   "Unconditionally lookup the word at point."
   (interactive)
@@ -846,6 +850,7 @@ It presents the word at point as default input and allows editing it."
   (interactive)
   (describe-function 'dictionary-mode))
 
+;;;###autoload
 (defun dictionary-match-words (&optional pattern &rest ignored)
   "Search `pattern' in current default dictionary using default strategy."
   (interactive)
