@@ -2,7 +2,7 @@
 
  ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
  ;; Keywords: interface, dictionary
- ;; $Id: dictionary.el,v 1.32 2001/12/15 13:37:10 torsten Exp $
+ ;; $Id: dictionary.el,v 1.34 2002/02/06 20:49:41 torsten Exp $
 
  ;; This file is free software; you can redistribute it and/or modify
  ;; it under the terms of the GNU General Public License as published by
@@ -81,6 +81,43 @@
    "The default strategy for listing matching words."
    :group 'dictionary
    :type 'string)
+
+(defcustom dictionary-default-popup-strategy
+  "exact"
+  "The default strategy for listing matching words within a popup window.
+
+The following algorithm (defined by the dictd server) are supported
+by the choice value:
+
+- Exact match
+
+  The found word exactly matches the searched word.
+
+- Similiar sounding
+
+  The found word sounds similiar to the searched word.  For this match type
+  the soundex algorithm defined by Donald E. Knuth is used.  It will only
+  works with english words and the algorithm is not very reliable (i.e.,
+  the soundex algorithm is quite simple).
+
+- Levenshtein distance one
+
+  The Levenshtein distance is defined as the number of insertions, deletions,
+  or replacements needed to get the searched word.  This algorithm searches
+  for word where spelling mistakes are allowed.  Levenshtein distance one
+  means there is either a deleted character, an inserted character, or a
+  modified one. 
+
+- User choice
+
+  Here you can enter any matching algorithm supported by your
+  dictionary server.
+"
+  :group 'dictionary
+  :type '(choice (const :tag "Exact match" "exact")
+		 (const :tag "Similiar sounding" "soundex")
+		 (const :tag "Levenshtein distance one" "lev")
+		 (string :tag "User choice")))
 
  (defcustom dictionary-create-buttons
    t
@@ -1017,7 +1054,7 @@ It presents the word at point as default input and allows editing it."
     (error "Sorry, popup menus are not available in this emacs version"))
   (dictionary-do-matching (or word (current-word))
 			  dictionary-default-dictionary
-			  "exact"
+			  dictionary-default-popup-strategy
 			  'dictionary-process-popup-replies))
 
 (defun dictionary-process-popup-replies (reply)
@@ -1072,8 +1109,10 @@ It presents the word at point as default input and allows editing it."
 		      (mouse-set-point event)
 		      (current-word)))))
 	(let ((definition 
-		(dictionary-definition word 
-				       dictionary-tooltip-dictionary)))
+		(dictionary-decode-charset 
+		 (dictionary-definition word 
+					dictionary-tooltip-dictionary)
+		 dictionary-tooltip-dictionary)))
 	  (if definition 
 	      (tooltip-show definition))
 	  t))
