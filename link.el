@@ -42,7 +42,8 @@ link.  Upon clicking the `function' is called with `data' as argument."
 		      link-data ,data
 		      help-echo ,help
 		      link-function ,function)))
-    (set-text-properties start end properties)))
+    (remove-text-properties start end properties)
+    (add-text-properties start end properties)))
 
 (defun link-insert-link (text face function &optional data help)
   "Insert the `text' at point to be formatted as link.

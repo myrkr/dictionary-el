@@ -117,7 +117,7 @@ one dictionary yields matches."
     (((type tty)
       (class color)
       (background dark))
-     (:foreground "brightyellow"))
+     (:foreground "cyan"))
     (((class color)
       (background light))
      (:foreground "blue"))
@@ -261,9 +261,16 @@ This is a quick reference to this mode describing the default key bindings:
   (define-key dictionary-mode-map "m" 'dictionary-match-words)
   (define-key dictionary-mode-map "l" 'dictionary-previous)
 
-  (define-key dictionary-mode-map [tab] 'dictionary-next-link)
-  (define-key dictionary-mode-map "n" 'dictionary-next-link)
+  (if (and (string-match "GNU" (emacs-version))
+	   (not window-system))
+      (define-key dictionary-mode-map [9] 'dictionary-next-link)
+    (define-key dictionary-mode-map [tab] 'dictionary-next-link))
+
+  ;; shift-tabs normally is supported on window systems only, but
+  ;; I do not enforce it
   (define-key dictionary-mode-map [(shift tab)] 'dictionary-prev-link)
+  
+  (define-key dictionary-mode-map "n" 'dictionary-next-link)
   (define-key dictionary-mode-map "p" 'dictionary-prev-link)
 
   (define-key dictionary-mode-map " " 'scroll-up)
