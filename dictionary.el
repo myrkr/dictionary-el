@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.16 2000/05/07 08:56:50 torsten Exp $
+;; $Id: dictionary.el,v 1.17 2001/04/26 16:57:32 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -231,8 +231,11 @@ This is a quick reference to this mode describing the default key bindings:
   "Create a new dictonary buffer and install dictionary-mode"
   (interactive)
 
-  (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
-	(window-configuration (current-window-configuration)))
+  (let ((coding-system-for-read 'utf-8)
+	(coding-system-for-write 'utf-8))
+    (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
+	  (window-configuration (current-window-configuration)))
+
     (switch-to-buffer-other-window buffer)
     (dictionary-mode)
     
@@ -240,7 +243,7 @@ This is a quick reference to this mode describing the default key bindings:
     (setq dictionary-window-configuration window-configuration)
     (dictionary-check-connection)
     (dictionary-pre-buffer)
-    (dictionary-post-buffer)))
+    (dictionary-post-buffer))))
 
 (unless dictionary-mode-map
   (setq dictionary-mode-map (make-sparse-keymap))
@@ -525,7 +528,7 @@ This function knows about the special meaning of quotes (\")"
   "Insert the definition for the current word"
   (let ((start (point)))
     (insert reply)
-    (let ((regexp "\\({+\\)\\([^}]+\\)\\(}+\\)"))
+    (let ((regexp "\\({+\\)\\([^ '\"][^}]*\\)\\(}+\\)"))
       (goto-char start)
       (while (< (point) (point-max))
 	(if (search-forward-regexp regexp nil t)

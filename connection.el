@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: network
-;; $Id: connection.el,v 1.6 2000/04/16 08:45:21 torsten Exp $
+;; $Id: connection.el,v 1.7 2001/04/26 16:56:21 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,18 +21,6 @@
 
 (eval-when-compile
   (require 'cl))
-
-(defcustom connection-broken-end-of-line
-  nil
-  "Set to t (on) if you use a MULE Emacsen and have problems while connecting.
-Usually for the dict protocol, the end of line characters are \\r\\n.
-However, some users reported problems with using Emacs 20.3 and MULE
-which seems to convert the \\r\\n to \\n while inserting the text into
-the buffer.  If you encounter these problems please set the value to t
-and try again.
-"
-  :group 'dictionary
-  :type 'boolean)
 
 (defmacro connection-p (connection)
   "Returns non-nil if `connection' is a connection object"
@@ -143,7 +131,7 @@ nil: argument is no connection object
       (set-buffer (connection-buffer connection))
       (goto-char (connection-read-point connection))
       ;; Wait until there is enough data 
-      (while (not (search-forward delimiter nil t))
+      (while (not (search-forward-regexp delimiter nil t))
 	(accept-process-output (connection-process connection) 3)
 	(goto-char (connection-read-point connection)))
       (setq match-end (point))
@@ -155,15 +143,10 @@ nil: argument is no connection object
 
 (defun connection-read-crlf (connection)
   "Read until a line is completedx with CRLF"
-  (connection-read connection (if connection-broken-end-of-line
-				  "\n"
-				"\r\n")))
+  (connection-read connection "\015?\012"))
 
 (defun connection-read-to-point (connection)
   "Read until a line is consisting of a single point"
-  (connection-read connection (if connection-broken-end-of-line
-				  "\n.\n"
-				"\r\n.\r\n")))
-
+  (connection-read connection "\015?\012[.]\015?\012"))
 
 (provide 'connection)

@@ -5,7 +5,7 @@ Introduction
 Recently I installed the dictd server, which can be used to access several
 dictionaries using a simple protocol as defined in RFC 2229 (Text Version).
 
-As my primary working environment is XEmacs 20.4, I decided to write an
+As my primary working environment is XEmacs 21, I decided to write an
 Emacs-Lisp package for accessing this dictionary server. The older
 webster.el didn't worked with the newer protocol. After starting the
 implementation I was pointed to an already existing implementation, but this
@@ -13,7 +13,7 @@ was basically a wrapper to the dict client program and didn't have all the
 features I wanted.
 
 If you didn't received this file from its original location you can visit it
-at http://www.in-berlin.de/User/myrkr/dictionary.html
+at http://me.in-berlin.de/~myrkr/dictionary.html
 
 Features
 
@@ -26,8 +26,8 @@ The dictionary mode provides the following features:
    * easy selection of dictionary and search strategy
    * backward moving through the visited definitions
 
-Here is a sample screenshot showing the dictionary mode in action within a
-XEmacs buffer:
+Here is a sample screenshot showing the dictionary mode in action within an
+Emacs 21 buffer:
 
 [Image]
 
@@ -43,8 +43,10 @@ Download and Requirements
 I have tested the package with a native GNU Emacs 19.34.1 and XEmacs 20.4. I
 implemented some hacks to work with the very very old custom.el file in the
 above GNU Emacs. Please update to the current version whenever possible.
+XEmacs 21 and Emacs 20 as well as Emacs 21 have been tested too.
 
-   * Current version (1.2.1) of this package
+   * Current version (1.3) of this package
+   * Version 1.2.1 of this package
    * Version 1.1 of this package
    * Version 1.0 of this package
 
@@ -54,29 +56,29 @@ You will need the custom package to use this package. For full support
 please check if your system knows the defface function, if not please
 download the current version.
 
-For best usuability I suggest using the mouse, but it provide good keyboard
+For best usability I suggest using the mouse, but it provide good keyboard
 support as well.
 
 Unpacking the archive
 
 The package is distributed as tar.gz file. You unpack it using:
 
-gunzip dictionary-1.2.1.tar.gz | tar xf -
+gunzip dictionary-1.3.tar.gz | tar xf -
 
 or
 
-tar -xzf dictionary-1.2.1.tar.gz
+tar -xzf dictionary-1.3.tar.gz
 
 (with the version number subject to change) depending on whether you are
 using GNU tar which support the z flag for compression. After unpacking the
-archive a directory dictionary-1.2.1 has been created containing the
-necessary files.
+archive a directory dictionary-1.3 has been created containing the necessary
+files.
 
 Byte compiling
 
 For faster loading and executing of the package I strongly suggest that you
-bytecompile the files. Emacs user please call make within the create
-subdirectory, XEmacs user has to specifiy there favorite tool using make
+byte-compile the files. Emacs user please call make within the create
+subdirectory, XEmacs user has to specify there favorite tool using make
 EMACS=xemacs. If your custom package is not up-to-date expect some warnings
 about free variables.
 
@@ -96,16 +98,18 @@ dictionary package whenever needed. I suggest using the following lines:
   "Ask for a word and search it in all dictionaries" t)
 (autoload 'dictionary-match-words "dictionary"
   "Ask for a word and search all matching words in the dictionaries" t)
+(autoload 'dictionary-lookup-definition "dictionary"
+  "Unconditionally lookup the word at point." t)
 (autoload 'dictionary "dictionary"
   "Create a new dictionary buffer" t)
 
-In addition, some keybindings for faster access can be useful. I use the
+In addition, some key bindings for faster access can be useful. I use the
 following ones in my installation:
 
 (global-set-key [(control c) ?s] 'dictionary-search)
 (global-set-key [(control c) ?m] 'dictionary-match-words)
 
-I will describe the user-callable functions and the keybindings within
+I will describe the user-callable functions and the key bindings within
 dictionary mode later in this document.
 
 Using the package
@@ -122,7 +126,7 @@ pattern
      as a single word but also as complex as a POSIX regular expression. The
      meaning of a pattern depends on the strategy used for matching words.
 dictionary
-     The server can handle serveral distinct dictionaries. You can select
+     The server can handle several distinct dictionaries. You can select
      specific dictionaries or ask the server to search in all dictionaries
      or until matches or definitions are found. To search in all
      dictionaries the special name * is used, the special name ! requests to
@@ -137,7 +141,7 @@ match
 strategy
      While matching in a dictionary serveral methods for comparing words can
      be used. These methods are named strategies and include exact match,
-     regualare expression match, and soundex match. The available strategies
+     regular expression match, and soundex match. The available strategies
      depends on the server, but a special name . can be used to denote a
      server-default strategy.
 
@@ -146,7 +150,7 @@ Invoking
 There are four different (documented) ways of invoking the package. By
 calling dictionary you can start a new dictionary buffer waiting for your
 commands. If you want to create multiple buffers for searching the
-dictionary, you can run this function muliple times. dictionary-search will
+dictionary, you can run this function multiple times. dictionary-search will
 ask for a word a search defaulting to the word at point and present all
 definitions found.
 
@@ -163,10 +167,6 @@ You can have multiple independent dictionary buffer. If the above functions
 are called from within dictionary mode they reuse the existing buffer.
 Otherwise they create a new buffer.
 
-If you encounter emacs blocking forever while searching an entry and you are
-using MULE you should check the value of the connection-broken-end-of-line
-variable, which can be set to t in this case.
-
 Quitting
 
 Once a dictionary buffer is created you can close it by simply typing q
@@ -178,14 +178,14 @@ reestablish it when the buffer is being closed.
 
 Using the buffer
 
-After a successful search the buffer is devided into two sections. The first
+After a successful search the buffer is divided into two sections. The first
 one is the button area at the top, the other one is the text buffer
 displaying the result. By pressing the buttons you can select some functions
 that are otherwise inaccessible with the mouse.
 
 In the text are each definition is introduced by the name of the database
 that contains it. In the default configuration this text is in italic face.
-The definition itself can contains hyperlinks that are marked using blue
+The definition itself can contains hyper links that are marked using blue
 foreground and both sensitive to clicking with the mouse and pressing return
 while being within the link.
 
@@ -195,7 +195,7 @@ the l key (dictionary-previous) to return the previous buffer contents.
 
 Pressing Meta while clicking on a link to start the search will extent the
 search to all dictionaries (dictionary-default-dictionary to be more
-precisly).
+precisely).
 
 If you prefer using the keyboard it can be very frustrating to use the
 cursor key to position the point before pressing return to visit the link is
@@ -290,8 +290,9 @@ starting from C-c a to C-c z.
 
 Thanks
 
-I want to thank Sam Steingold, Baoqiu Cui, and Bruce Ravel for their
-valuable suggestions (including patches) for improving this package.
+I want to thank Sam Steingold, Baoqiu Cui, Bruce Ravel, Pavel Janík, and
+Sergei Pokrovsky for their valuable suggestions (including patches) for
+improving this package.
 
 License
 
@@ -309,6 +310,15 @@ You should have received a copy of the GNU General Public License version 2
 along with this package; see the file GPL.
 
 ChangeLogs
+
+Version 1.2.1 - 1.3
+
+   * Implemented an automatic detection for line ends CR/LF and LF. The
+     variable connection-broken-end-of-line is no longer necessary and its
+     value ignored.
+   * Added utf-8 support, the native character set of the dictionary
+     protocol. Using ISO-8859-1 (aka latin-1) was just a necessary
+     work-around.
 
 Version 1.2 - 1.2.1
 
@@ -350,4 +360,4 @@ Version 1.0 - 1.1
 
   ------------------------------------------------------------------------
 Torsten Hilbrich
-Last modified: Sun May 7 11:06:16 CEST 2000
+Last modified: Thu Apr 26 19:50:39 CEST 2001
