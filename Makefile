@@ -1,42 +1,84 @@
-# Makefile for dictionary code
+# -*- Makefile -*- $Id: Makefile.upstream,v 1.5 2002/05/17 17:48:04 torsten Exp $
 
-# This file is part of XEmacs.
+EMACS=emacs
 
-# XEmacs is free software; you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published by the
-# Free Software Foundation; either version 2, or (at your option) any
-# later version.
+VERSION=1.8
+PACKAGE=dictionary
+TYPE=comm
+XEMACS-PACKAGE=$(PACKAGE)-$(VERSION)-pkg.tar.gz
 
-# XEmacs is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-# for more details.
+SOURCES=dictionary.el connection.el link.el
+COMPILED=dictionary.elc connection.elc link.elc
 
-# You should have received a copy of the GNU General Public License
-# along with XEmacs; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+.SUFFIXES: .elc .el
 
-VERSION = 1.10
-AUTHOR_VERSION = 1.8
-MAINTAINER = Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
-PACKAGE = dictionary
-PKG_TYPE = regular
-REQUIRES = xemacs-base
-CATEGORY = standard
+.el.elc:
+	$(EMACS) -q -no-site-file -no-init-file -batch -l lpath.el \
+	-f batch-byte-compile $<
 
-ELCS = dictionary.elc connection.elc link.elc
+.PHONY: all
+all: $(COMPILED)
 
-EXTRA_SOURCES = README GPL
+.PHONY: debian
+debian:
+	[ -x debian ] || ln -s deb debian
+	@if [ -x /usr/bin/fakeroot ]; then \
+	  dpkg-buildpackage -us -uc -rfakeroot; \
+	elif [ `id -u` -ne 0 ]; then \
+	  echo "You are not root and fakeroot is not installed, aborting"; \
+	  exit 1; \
+	else \
+	  dpkg-buildpackage -us -uc; \
+	fi
+	@echo "You can now install the debian package, the previous output tells"
+	@echo "you its location (probably stored in ..)"
+	@echo
+	@echo "Please note, this debian package is unofficial, report bugs"
+	@echo "to me only, not to the Debian Bugtracking System."
 
-GENERATED += custom-load.elc
+.PHONY: package
+package: $(XEMACS-PACKAGE) 
 
-include ../../XEmacs.rules
+$(XEMACS-PACKAGE): $(COMPILED)
+	@case $(EMACS) in emacs*) printf "\aNote, packages work with XEmacs 21 only, hope you know what you are doing\n\n";; esac
+	@mkdir -p lisp/$(PACKAGE)
+	@mkdir -p pkginfo
+	@printf ";;;###autoload\n(package-provide '$(PACKAGE)\n:version $(VERSION)\n:type '$(TYPE))\n" > lisp/$(PACKAGE)/_pkg.el
+	@rm -f lisp/$(PACKAGE)/auto-autoloads.el lisp/$(PACKAGE)/custom-load.el
+	@cp $(SOURCES) $(COMPILED) lisp/$(PACKAGE)
+	@cd lisp &&  \
+	$(EMACS) -vanilla -batch -l autoload -f batch-update-directory $(PACKAGE) && \
+	$(EMACS) -vanilla -batch -l cus-dep -f Custom-make-dependencies $(PACKAGE) && \
+	$(EMACS) -vanilla -batch -f batch-byte-compile $(PACKAGE)/auto-autoloads.el $(PACKAGE)/custom-load.el
+	@touch pkginfo/MANIFEST.$(PACKAGE)
+	@find lisp pkginfo -type f > pkginfo/MANIFEST.$(PACKAGE)
+	@tar cf - pkginfo lisp | gzip -c > $(XEMACS-PACKAGE)
 
-all:: $(ELCS) auto-autoloads.elc custom-load.elc
+.PHONY: package-install
+package-install: package
+	@if [ `id -u` -ne 0 ]; then printf "\aWarning, you are not root; the installation might fail\n\n"; fi
+	@$(EMACS) -vanilla -batch -l install-package.el -f install-package `pwd`/$(XEMACS-PACKAGE)
 
-srckit: srckit-std
+.PHONY: view-info
+view-info: info
+	info doc/dictionary.info
 
-binkit: binkit-common
+.PHONY: doc
+doc: info html
 
+.PHONY: info
+info: doc/dictionary.info
 
+doc/dictionary.info: doc/dictionary.texi
+	cd doc && makeinfo --output dictionary.info dictionary
+
+.PHONY: html
+html: doc/dictionary
+
+doc/dictionary: doc/dictionary.texi
+	cd doc && makeinfo --html dictionary
+
+.PHONY: clean
+clean:
+	rm -f $(XEMACS-PACKAGE) $(COMPILED) build
+	rm -rf debian/tmp lisp pkginfo
