@@ -938,12 +938,6 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
       (error "Unknown server answer: %s" (dictionary-reply reply)))
     (funcall function reply)))
 
-(defun dictionary-display-match-result (reply)
-  "Display the results from the current matches."
-  (dictionary-pre-buffer)
-  (dictionary-display-only-match-result reply)
-  (dictionary-post-buffer))
-
 (defun dictionary-display-only-match-result (reply)
   "Display the results from the current matches without the headers."
 

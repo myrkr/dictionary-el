@@ -1,4 +1,10 @@
-dictionary (1.8-2) unstable; urgency=low
+dictionary (1.8.3-1) unstable; urgency=low
+
+  * Fixed multiple defined function in dictionary.el
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Fri, 20 Sep 2002 22:19:06 +0200
+
+dictionary (1.8.2-1) unstable; urgency=low
 
   * fixed Makefile
 
