@@ -1,3 +1,9 @@
+dictionary (1.8-1) unstable; urgency=low
+
+  * added search for similiar words when the searched word is not found.
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Wed, 20 Mar 2002 21:27:54 +0100
+
 dictionary (1.7.4-1) unstable; urgency=low
 
   * dictionary.el (dictionary-do-matching): removed quotes around

@@ -622,8 +622,14 @@ This function knows about the special meaning of quotes (\")"
   (message nil)
   (let ((reply (dictionary-read-reply-and-split)))
     (if (dictionary-check-reply reply 552)
-	(error "Word \"%s\" in dictionary \"%s\" not found"
-	       word dictionary)
+	(progn
+	  (beep)
+	  (insert "Word not found, maybe you look for one of these words\n\n")
+	  (dictionary-do-matching word
+				  dictionary
+				  "."
+				  'dictionary-display-only-match-result)
+	  (dictionary-post-buffer))
       (if (dictionary-check-reply reply 550)
 	  (error "Dictionary \"%s\" is unknown, please select an existing one."
 		 dictionary)
@@ -929,6 +935,34 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
     (unless (dictionary-check-reply reply 152)
       (error "Unknown server answer: %s" (dictionary-reply reply)))
     (funcall function reply)))
+
+(defun dictionary-display-match-result (reply)
+  "Display the results from the current matches."
+  (dictionary-pre-buffer)
+  (dictionary-display-only-match-result reply)
+  (dictionary-post-buffer))
+
+(defun dictionary-display-only-match-result (reply)
+  "Display the results from the current matches without the headers."
+
+  (let ((number (nth 1 (dictionary-reply-list reply)))
+	(list (dictionary-simple-split-string (dictionary-read-answer) "\n+")))
+    (insert number " matching word" (if (equal number "1") "" "s")
+	    " found\n\n")
+    (let ((result nil))
+      (mapcar (lambda (item)
+		(let* ((list (dictionary-split-string item))
+		       (dictionary (car list))
+		       (word (cadr list))
+		       (hash (assoc dictionary result)))
+		  (if dictionary
+		      (if hash
+			  (setcdr hash (cons word (cdr hash)))
+		    (setq result (cons 
+				  (cons dictionary (list word)) 
+				  result))))))
+	      list)
+      (dictionary-display-match-lines (reverse result)))))
 
 (defun dictionary-display-match-result (reply)
   "Display the results from the current matches."

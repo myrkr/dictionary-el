@@ -1,8 +1,8 @@
-# -*- Makefile -*- $Id$
+# -*- Makefile -*- $Id: Makefile.upstream,v 1.3 2002/03/16 10:50:57 torsten Exp $
 
 EMACS=emacs
 
-VERSION=1.7
+VERSION=1.8
 PACKAGE=dictionary
 TYPE=comm
 XEMACS-PACKAGE=$(PACKAGE)-$(VERSION)-pkg.tar.gz

@@ -2,6 +2,7 @@ Source: dictionary
 Section: unofficial
 Priority: optional
 Maintainer: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+Build-Depends: dpkg-dev, debmake
 Standards-Version: 3.2.1
 
 Package: dictionary

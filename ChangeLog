@@ -1,3 +1,8 @@
+2002-03-20  Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+	
+	* dictionary.el (dictionary-do-search): if the word is not found,
+	  lookup similiar words using the match function 
+
 2002-03-15  Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 	
 	* dictionary.el (dictionary-do-matching):
