@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.24 2001/07/08 19:06:50 torsten Exp $
+;; $Id: dictionary.el,v 1.26 2001/07/17 19:08:23 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -144,6 +144,10 @@ one dictionary yields matches."
   nil
   "The window configuration to be restored upon closing the buffer")
 
+(defvar dictionary-selected-window
+  nil
+  "The currently selected window")
+
 (defvar dictionary-position-stack
   nil
   "The history buffer for point and window position")
@@ -240,13 +244,16 @@ This is a quick reference to this mode describing the default key bindings:
     (let ((coding-system-for-read coding-system)
           (coding-system-for-write coding-system))
       (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
-            (window-configuration (current-window-configuration)))
+            (window-configuration (current-window-configuration))
+	    (selected-window (frame-selected-window)))
 	
         (switch-to-buffer-other-window buffer)
         (dictionary-mode)
 	
         (make-local-variable 'dictionary-window-configuration)
+        (make-local-variable 'dictionary-selected-window)
         (setq dictionary-window-configuration window-configuration)
+	(setq dictionary-selected-window selected-window)
         (dictionary-check-connection)
         (dictionary-pre-buffer)
         (dictionary-post-buffer)))))
@@ -325,9 +332,11 @@ This is a quick reference to this mode describing the default key bindings:
 	(setq major-mode nil)
 	(if (<= (decf dictionary-instances) 0)
 	    (connection-close dictionary-connection))
-	(let ((configuration dictionary-window-configuration))
+	(let ((configuration dictionary-window-configuration)
+	      (selected-window dictionary-selected-window))
 	  (kill-buffer (current-buffer))
-	  (set-window-configuration configuration)))))
+	  (set-window-configuration configuration)
+	  (select-window selected-window)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helpful functions
@@ -457,9 +466,14 @@ This function knows about the special meaning of quotes (\")"
     (if all
 	(setq dictionary dictionary-default-dictionary))
     (dictionary-ensure-buffer)
-    (dictionary-pre-buffer)
-    (dictionary-do-search word dictionary 'dictionary-display-search-result)
-    (dictionary-store-state 'dictionary-do-search (list word dictionary))))
+    (dictionary-new-search-internal word dictionary 'dictionary-display-search-result)
+    (dictionary-store-state 'dictionary-new-search-internal 
+			    (list word dictionary 'dictionary-display-search-result))))
+
+(defun dictionary-new-search-internal (word dictionary function)
+  "Starts a new search after preparing the buffer"
+  (dictionary-pre-buffer)
+  (dictionary-do-search word dictionary function))
 
 (defun dictionary-do-search (word dictionary function)
   "The workhorse for doing the search"
