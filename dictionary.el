@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.26 2001/07/17 19:08:23 torsten Exp $
+;; $Id: dictionary.el,v 1.27 2001/09/02 08:39:47 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -894,11 +894,12 @@ It presents the word at point as default input and allows editing it."
 ;;;###autoload
 (defun dictionary-mouse-popup-matching-words (event)
   "Display entries matching the word at the cursor"
-  (interactive "@e")
+  (interactive "e")
   (let ((word (save-window-excursion
 		(save-excursion
 		  (mouse-set-point event)
 		  (current-word)))))
+    (selected-window)
     (dictionary-popup-matching-words word)))
 
 ;;;###autoload
