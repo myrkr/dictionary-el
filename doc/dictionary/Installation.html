@@ -1,0 +1,146 @@
+<html><head><title>Installation</title><link rel=next href="Usage.html">
+<link rel=previous href="index.html">
+<link rel=up href="index.html">
+</head>
+<body>
+<p>
+Node:<a name="Installation.html">Installation</a>,
+Next:<a rel=next href="Usage.html">Usage</a>,
+Previous:<a rel=previous href="index.html">Top</a>,
+Up:<a rel=up href="index.html">Top</a>
+<hr><br>
+
+<h1>Installation</h1>
+
+<p>The dictionary client is distributes as <code>tar.gz</code> file.  You can
+found the latest version at
+<a href="http://www.myrkr.in-berlin.de/dictionary/dictionary-1.7.2.tar.gz">http://www.myrkr.in-berlin.de/dictionary/dictionary-1.7.2.tar.gz</a>. 
+Please download this file now before continue reading.
+
+<h2>Unpacking</h2>
+
+<p>To unpack the archive use the following command:
+<pre>gzip -dc dictionary-1.7.2.tar.gz | tar -xf -
+</pre>
+
+<p>If you have a <code>GNU tar</code> installed, you can also the following
+command:
+<pre>tar -xzf dictionary-1.7.2.tar.gz
+</pre>
+
+<p>A directory named <code>dictionary-1.7.2</code> will have been created by
+these commands.
+
+<h2>Installing the files</h2>
+
+<p>There are several ways of installing this package.  If you are a
+Debian user you can create a Debian Package for installation using the
+<code>dpkg</code> command.  XEmacs users can create a XEmacs package
+which can be easily installed too.  Other users have to compile the
+package using the supplied <code>Makefile</code> and manually install the
+files.  All these installation methods are described in the following
+sections.
+
+<h3>Debian</h3>
+
+<p>If you are using a current Debian distribution (one that support the
+emacsen package system) and have the <code>dpkg-dev</code> package installed
+(for running <code>dpkg-buildpackage</code>) you can use the supplied
+debian support:
+
+<pre>make debian
+</pre>
+
+<p>This will create a package named <code>dictionary-1.7.2-1_all.deb</code> or
+similiar in the parent directory of <code>dictionary-1.7.2</code>.  You can
+now install this package as root, it will automatically byte-compile
+itself for all installed emacs versions and provide a startup-file
+which autoloads this package. In the configuration example given below
+you can omit the autoload lines.
+
+<p>If you no longer want to use this package, you can remove it using:
+
+<pre>dpkg -r dictionary
+</pre>
+
+<h3>XEmacs 21</h3>
+
+<p>XEmacs starting with version 21 has support for so called <em>xemacs
+packages</em>.  These packages are also supported, you can create them
+using:
+<pre>make EMACS=xemacs package
+</pre>
+
+<p>The created package will be named <code>dictionary-1.7-pkg.tar.gz</code> and
+stored within the current directory.  If you don't want to install
+this package manually, you can use the following command, provided you
+have sufficient privileges (if unsure, login as super user):
+
+<pre>make EMACS=xemacs package-install
+</pre>
+
+<p>If you have more than one XEmacs versions installed make sure the
+<code>EMACS</code> argument to make points to the correct binary.
+
+<p>Please note, dictionary is now part of the official XEmacs package
+distribution.  This means you can install this package using the
+integrated package management.
+
+<h3>Manual Installation</h3>
+
+<p>The first step in the manual installation is the byte compilation of
+the lisp file for quicker loading and execution.  Using the supplied
+<code>Makefile</code> this is quite easy, just invoke:
+
+<pre>make
+</pre>
+
+<p>in the <code>dictionary-1.7.2</code> sub directory.  This will use emacs as
+the name of the Emacs executable.  If you want to use a different
+location or a different program (for example, XEmacs) for byte
+compilation, use the <code>EMACS</code> argument to the <code>Makefile</code> like
+in the following example for XEmacs:
+
+<pre>make EMACS=xemacs
+</pre>
+
+<p>If your custom package is not up-to-date expect some warnings about
+free variables.
+
+<p>The next step is the installation of the files.  At the moment there
+is no support for this step, you have to copy the compiled lisp files
+(named <code>*.elc</code>) to a directory within your <var>load-path</var> by
+yourself.  Usually the directories <code>/usr/lib/emacs/site-lisp</code> or
+<code>/usr/local/lib/emacs/site-lisp</code> are suitable locations for this. 
+XEmacs users please use the according <code>xemacs/site-lisp</code>
+directory.
+
+<p>The final step is to inform your Emacs of the newly installed package. 
+I added a <code>dictionary-init.el</code> file to the distribution which
+contains some <code>autoload</code> instructions to let Emacs know of the
+new functions.  You can now insert the contents of this file in your
+<code>.emacs</code> or <code>.xemacs</code> file or install
+<code>dictionary-init.el</code> into the <code>site-lisp</code> directory and load
+it using:
+
+<pre>(load "dictionary-init")
+</pre>
+
+<h2>Key Bindings</h2>
+
+<p>You probably want to define some key combinations to invoke the
+<code>dictionary-search</code> or <code>dictionary-match</code> functions.
+
+<p>The following example shows the key bindings I'm using myself for this
+package.  These are not supplied by this package because the
+<code>C-c</code> prefix key together with a letter suffix are reserved for
+the user itself.  To activate these bindings insert them into your
+<code>.emacs</code> or <code>.xemacs</code> file:
+
+<pre>;; key bindings for the dictionary package
+(global-set-key "\C-cs" 'dictionary-search)
+(global-set-key "\C-cm" 'dictionary-match-words)
+</pre>
+
+</body></html>
+

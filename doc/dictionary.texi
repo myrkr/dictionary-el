@@ -1,0 +1,351 @@
+\input texinfo                          @c -*- texinfo -*-
+
+@setfilename dictionary
+@settitle Dictionary Client Manual
+@synindex fn cp
+@synindex vr cp
+@synindex pg cp
+@dircategory Emacs
+@direntry
+* Dictionary: (dictioanry). Dictionary client for using a RFC 2229 dict server.
+@end direntry
+@iftex
+@finalout
+@end iftex
+@setchapternewpage odd
+
+@ifnottex
+
+This file documents Dictionary, a client software for a RFC 2229 dict server.
+
+Copyright (C) 1998, 2002 Torsten Hilbrich
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU Manual'',
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled ``GNU Free Documentation License''
+in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and
+modify this GNU Manual, like GNU software.  Copies published by the
+Free Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end ifnottex
+
+@tex
+@titlepage
+@title Dictionary Client Manual
+
+@author by Torsten Hilbrich
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1998, 2002
+          Torsten Hilbrich
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being none, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end titlepage
+@page
+
+@end tex
+
+@node Top, Installation, (dir), (dir)
+@top Dictionary
+
+Dictionary is a Emacs@footnote{In the following manual Emacs is a name
+for both GNU Emacs and XEmacs.  If I need to differ between both Emacs
+variants I will use these names instead} package for accessing a
+dictionary server providing word definitions.
+
+The Request for Comments 2229 @uref{http://www.dict.org/rfc2229.txt}
+defines a protocol for communication between a dictionary client and a
+dictionary server.  The dictionary server keeps several databases
+(containing dictionary definitions) and provides an interface for the
+client to list the definition for a word and to search for words
+matching to pattern.
+
+This software implements the client side of that protocol.  It allows
+you to use a dictionary server (for example provided by the site
+@uref{www.dict.org}) from within Emacs.
+
+Please note that the dictionary protocol uses the port 2628 which is
+likely to be blocked by firewalls.  It is possible to connect to the
+dictionary server through a HTTP proxy similiar to the way HTTPS
+connections on port 443 are relayed, @xref{HTTP Proxy}.
+
+@menu
+* Installation::                Installation of the package
+* Usage::                       User manual
+* Variables::                   Customizing dictionary's behaviour
+* User callable Functions::     
+* Index::                       Variable, functions, and concept index.
+@end menu
+
+@node Installation, Usage, Top, Top
+@chapter Installation
+
+The dictionary client is distributes as @file{tar.gz} file.  You can
+found the latest version at
+@uref{http://www.myrkr.in-berlin.de/dictionary/dictionary-1.7.3.tar.gz}.
+Please download this file now before continue reading.
+
+@section Unpacking
+To unpack the archive use the following command:
+@example
+gzip -dc dictionary-1.7.3.tar.gz | tar -xf -
+@end example
+
+If you have a @command{GNU tar} installed, you can also the following
+command:
+@example
+tar -xzf dictionary-1.7.3.tar.gz
+@end example
+
+A directory named @file{dictionary-1.7.3} will have been created by
+these commands.
+
+@section Installing the files
+
+There are several ways of installing this package.  If you are a
+Debian user you can create a Debian Package for installation using the
+@command{dpkg} command.  XEmacs users can create a XEmacs package
+which can be easily installed too.  Other users have to compile the
+package using the supplied @file{Makefile} and manually install the
+files.  All these installation methods are described in the following
+sections.
+
+@subsection Debian
+
+If you are using a current Debian distribution (one that support the
+emacsen package system) and have the @file{dpkg-dev} package installed
+(for running @command{dpkg-buildpackage}) you can use the supplied
+debian support:
+
+@example
+make debian
+@end example
+
+This will create a package named @file{dictionary-1.7.3-1_all.deb} or
+similiar in the parent directory of @file{dictionary-1.7.3}.  You can
+now install this package as root, it will automatically byte-compile
+itself for all installed emacs versions and provide a startup-file
+which autoloads this package. In the configuration example given below
+you can omit the autoload lines.
+
+If you no longer want to use this package, you can remove it using:
+
+@example
+dpkg -r dictionary
+@end example
+
+@subsection XEmacs 21
+
+XEmacs starting with version 21 has support for so called @emph{xemacs
+packages}.  These packages are also supported, you can create them
+using:
+@example
+make EMACS=xemacs package
+@end example
+
+The created package will be named @file{dictionary-1.7-pkg.tar.gz} and
+stored within the current directory.  If you don't want to install
+this package manually, you can use the following command, provided you
+have sufficient privileges (if unsure, login as super user):
+
+@example
+make EMACS=xemacs package-install
+@end example
+
+If you have more than one XEmacs versions installed make sure the
+@code{EMACS} argument to make points to the correct binary. 
+
+Please note, dictionary is now part of the official XEmacs package
+distribution.  This means you can install this package using the
+integrated package management.
+
+@subsection Manual Installation
+
+The first step in the manual installation is the byte compilation of
+the lisp file for quicker loading and execution.  Using the supplied
+@file{Makefile} this is quite easy, just invoke:
+
+@example
+make
+@end example
+
+in the @file{dictionary-1.7.3} sub directory.  This will use emacs as
+the name of the Emacs executable.  If you want to use a different
+location or a different program (for example, XEmacs) for byte
+compilation, use the @code{EMACS} argument to the @file{Makefile} like
+in the following example for XEmacs:
+
+@example
+make EMACS=xemacs
+@end example
+
+If your custom package is not up-to-date expect some warnings about
+free variables.
+
+The next step is the installation of the files.  At the moment there
+is no support for this step, you have to copy the compiled lisp files
+(named @file{*.elc}) to a directory within your @var{load-path} by
+yourself.  Usually the directories @file{/usr/lib/emacs/site-lisp} or
+@file{/usr/local/lib/emacs/site-lisp} are suitable locations for this.
+XEmacs users please use the according @file{xemacs/site-lisp}
+directory.
+
+The final step is to inform your Emacs of the newly installed package.
+I added a @file{dictionary-init.el} file to the distribution which
+contains some @code{autoload} instructions to let Emacs know of the
+new functions.  You can now insert the contents of this file in your
+@file{.emacs} or @file{.xemacs} file or install
+@file{dictionary-init.el} into the @file{site-lisp} directory and load
+it using:
+
+@lisp
+(load "dictionary-init")
+@end lisp
+
+@section Key Bindings
+
+You probably want to define some key combinations to invoke the
+@code{dictionary-search} or @code{dictionary-match} functions.
+
+The following example shows the key bindings I'm using myself for this
+package.  These are not supplied by this package because the
+@code{C-c} prefix key together with a letter suffix are reserved for
+the user itself.  To activate these bindings insert them into your
+@file{.emacs} or @file{.xemacs} file:
+
+@lisp
+;; key bindings for the dictionary package
+(global-set-key "\C-cs" 'dictionary-search)
+(global-set-key "\C-cm" 'dictionary-match-words)
+@end lisp
+
+@node Usage, Variables, Installation, Top
+@chapter Usage
+
+The default setup of dictionary connects to @uref{dict://dict.org}, so
+the package should work without modification if you are connected to
+the Internet.  Otherwise you should configure the package first,
+@xref{Variables}.
+
+@menu
+* Invoking::                    Starting the package
+* Quitting::                    End your work
+* Using::                       
+@end menu
+
+@node Invoking, Quitting, Usage, Usage
+@section Invoking
+
+There are six different ways of invoking the package.
+
+By calling @code{dictionary} you can start a new (empty) dictionary
+buffer waiting for your commands.  If you want to create multiple
+buffers for searching, you can run this function multiply times.
+
+The function @code{dictionary-search} asks you for a word to search
+defaulting to the word at point.  It allows you to modify the default
+word before starting the search.
+
+If you want to lookup the word at point without further confirmation,
+you can use the @code{dictionary-lookup-definition} function.
+
+A quite different function is @code{dictionary-match-words}.  It will
+not search for a single word definition but will present you a list of
+all matching words.  You can now choose the word's definition you are
+interested in.
+
+A convience function to list matching words is
+@code{dictionary-mouse-popup-matching-words}.  It must be bound to a
+mouse button event and will present you a popup menu of all matching
+words to the word where you clicked with the mouse.  This functions
+works in GNU Emacs 21 and XEmacs 21.
+
+The last method is the tool-tip support.  If activated it will search
+all words where your mouse cursor is pointed.  It will show the words
+definition as tool-tip (a little yellow window).  This function is
+currently supported in GNU Emacs 21 only.
+
+@node Quitting, Using, Invoking, Usage
+@section Quitting
+
+Once a dictionary buffer is created you can close it by simply typing
+@key{q} (@code{dictionary-close}) or pressing the @strong{Quit} button
+one the top.
+
+Another, also correctly implemented way, is the @code{kill-buffer}
+function which can be invoked by @code{C-x k}.
+
+@node Using,  , Quitting, Usage
+@section Using
+
+After a successful search the dictionary buffer is divided into two
+sections.  THe first one is the @dfn{button area} at the top, the
+second one is the text buffer below displaying the result.  By
+pressing the buttons you can select some functions that are otherwise
+inaccessible with the mouse.
+
+A button is pressed by using the middle mouse button (@key{Button-2}
+or @key{Mouse-2} in Emacs speak).  You can also use the @key{RET} key
+on your keyboard when the point is located at a button.
+
+In the text area each definition is introduced by the name of the
+database contanining it.  In the default configuration this text is in
+italic face (@code{dictionary-word-entry-face}).  The definition
+itself can contains hyper-links that are marked with the
+@code{dictionary-reference-face}.  Depending on the background and the
+facilities of your Emacs and terminal it can be shown in yellow, cyan,
+and blue color.  In the X11 window system it is displayed in blue.
+
+These links can be selected using either the mouse button
+(@key{Button-2} or @key{Mouse-2}) or the @key{RET} key on your
+keyboard.  The buffer will be updated with the selected definition.
+You can use the @key{l} (@code{dictionary-previous}) or the
+@strong{Back} button at the top to return to the previous entry.
+
+
+@node Variables, User callable Functions, Usage, Top
+@chapter Variables
+
+@menu
+* HTTP Proxy::                  Configuration for HTTP proxy support
+@end menu
+
+@node HTTP Proxy,  , Variables, Variables
+@section HTTP Proxy
+
+@node User callable Functions, Index, Variables, Top
+@chapter User callable Functions
+
+@node Index,  , User callable Functions, Top
+@chapter Index
+@printindex cp
+
+@summarycontents
+@contents
+@bye
+

@@ -2,7 +2,7 @@
 
  ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
  ;; Keywords: interface, dictionary
- ;; $Id: dictionary.el,v 1.34 2002/02/06 20:49:41 torsten Exp $
+ ;; $Id: dictionary.el,v 1.36 2002/03/18 18:13:59 torsten Exp $
 
  ;; This file is free software; you can redistribute it and/or modify
  ;; it under the terms of the GNU General Public License as published by
@@ -456,6 +456,7 @@ by the choice value:
 (defun dictionary-send-command (string)
   "Send the command `string' to the network connection."
   (dictionary-check-connection)
+  ;;;; #####
   (connection-send-crlf dictionary-connection string))
 
 (defun dictionary-read-reply ()
@@ -545,7 +546,7 @@ This function knows about the special meaning of quotes (\")"
   "Convert the text to the charset defined by the dictionary given."
   (let ((coding-system (dictionary-coding-system dictionary)))
     (if coding-system
-	(decode-coding-string text coding-system)
+	(encode-coding-string text coding-system)
       text)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -614,9 +615,10 @@ This function knows about the special meaning of quotes (\")"
   "The workhorse for doing the search"
 
   (message "Searching for %s in %s" word dictionary)
-  (dictionary-send-command (concat "define \"" dictionary "\" \""
+  (dictionary-send-command (concat "define " dictionary " \""
 				   (dictionary-encode-charset word dictionary)
 				   "\""))
+
   (message nil)
   (let ((reply (dictionary-read-reply-and-split)))
     (if (dictionary-check-reply reply 552)
@@ -822,7 +824,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 		(equal dictionary "!"))
       (dictionary-store-positions)
       (message "Requesting more information on %s" dictionary)
-      (dictionary-send-command (concat "show info \"" dictionary "\""))
+      (dictionary-send-command (concat "show info " dictionary))
       (let ((reply (dictionary-read-reply-and-split)))
 	(message nil)
 	(if (dictionary-check-reply reply 550)
@@ -911,8 +913,8 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   (message "Lookup matching words for %s in %s using %s"
 	   word dictionary strategy)
   (dictionary-send-command 
-   (concat "match \"" dictionary "\" \""
-	   strategy "\" \"" word "\""))
+   (concat "match " dictionary " "
+	   strategy " \"" (dictionary-encode-charset word "") "\""))
   (let ((reply (dictionary-read-reply-and-split)))
     (message nil)
     (if (dictionary-check-reply reply 550)
@@ -1066,6 +1068,7 @@ It presents the word at point as default input and allows editing it."
 				   (dictionary (car list))
 				   (word (dictionary-decode-charset 
 					  (cadr list) dictionary)))
+			      (message word)
 			      (if (equal word "")
 				  [ "-" nil nil]
 				(vector (concat "[" dictionary "] " word)

@@ -1,11 +1,11 @@
 Source: dictionary
-Section: unknown
+Section: unofficial
 Priority: optional
-Maintainer: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
+Maintainer: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 Standards-Version: 3.2.1
 
 Package: dictionary
-Architecture: any
+Architecture: all
 Depends: emacsen
 Description: dictionary client for emacs 
  This dictionary client provides access to a dictionary server

@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+<title>Dictionary Client Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name=description content="Dictionary Client Manual">
+<meta name=generator content="makeinfo 4.0b">
+<link href="http://texinfo.org/" rel=generator-home>
+</head>
+
+<body>
+This file documents Dictionary, a client software for a RFC 2229 dict server.
+
+<p>Copyright (C) 1998, 2002 Torsten Hilbrich
+
+<p>Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being "A GNU Manual",
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled "GNU Free Documentation License"
+in the Emacs manual.
+
+<p>(a) The FSF's Back-Cover Text is: "You have freedom to copy and
+modify this GNU Manual, like GNU software.  Copies published by the
+Free Software Foundation raise funds for GNU development."
+
+<p>This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+<html><head><title>Top</title><link rel=next href="Installation.html">
+</head>
+<body>
+<p>
+Node:<a name="index.html">Top</a>,
+Next:<a rel=next href="Installation.html">Installation</a>
+<hr><br>
+
+<p>Next:<a rel=next href="Installation.html">Installation</a>
+
+<h1>Dictionary</h1>
+
+<p>Dictionary is a Emacs<a rel=footnote href="#fn-1"><sup>1</sup></a> package for accessing a
+dictionary server providing word definitions.
+
+<p>The Request for Comments 2229 <a href="http://www.dict.org/rfc2229.txt">http://www.dict.org/rfc2229.txt</a>
+defines a protocol for communication between a dictionary client and a
+dictionary server.  The dictionary server keeps several databases
+(containing dictionary definitions) and provides an interface for the
+client to list the definition for a word and to search for words
+matching to pattern.
+
+<p>This software implements the client side of that protocol.  It allows
+you to use a dictionary server (for example provided by the site
+<a href="www.dict.org">www.dict.org</a>) from within Emacs.
+
+<p>Please note that the dictionary protocol uses the port 2628 which is
+likely to be blocked by firewalls.  It is possible to connect to the
+dictionary server through a HTTP proxy similiar to the way HTTPS
+connections on port 443 are relayed, See <a href="HTTP-Proxy.html">HTTP Proxy</a>.
+
+<ul>
+<li><a href="Installation.html">Installation</a>:                 Installation of the package
+<li><a href="Usage.html">Usage</a>:                        User manual
+<li><a href="Variables.html">Variables</a>:                    Customizing dictionary's behaviour
+<li><a href="User-callable-Functions.html">User callable Functions</a>: 
+<li><a href="Index.html">Index</a>:                        Variable, functions, and concept index. 
+</ul>
+
+<hr><h4>Footnotes</h4>
+<ol type="1">
+<li><a name="fn-1"></a>
+<p>In the following manual Emacs is a name
+for both GNU Emacs and XEmacs.  If I need to differ between both Emacs
+variants I will use these names instead</p>
+
+</ol><hr>
+
+</body></html>
+

@@ -1,3 +1,5 @@
+# -*- Makefile -*- $Id$
+
 EMACS=emacs
 
 VERSION=1.7
@@ -55,6 +57,25 @@ $(XEMACS-PACKAGE): $(COMPILED)
 package-install: package
 	@if [ `id -u` -ne 0 ]; then printf "\aWarning, you are not root; the installation might fail\n\n"; fi
 	@$(EMACS) -vanilla -batch -l install-package.el -f install-package `pwd`/$(XEMACS-PACKAGE)
+
+.PHONY: view-info
+view-info: info
+	info doc/dictionary.info
+
+.PHONY: doc
+doc: info html
+
+.PHONY: info
+info: doc/dictionary.info
+
+doc/dictionary.info: doc/dictionary.texi
+	cd doc && makeinfo --output dictionary.info dictionary
+
+.PHONY: html
+html: doc/dictionary
+
+doc/dictionary: doc/dictionary.texi
+	cd doc && makeinfo --html dictionary
 
 .PHONY: clean
 clean:

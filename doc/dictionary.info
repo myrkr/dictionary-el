@@ -1,0 +1,250 @@
+This is dictionary.info, produced by makeinfo version 4.0b from
+dictionary.texi.
+
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Dictionary: (dictioanry). Dictionary client for using a RFC 2229 dict server.
+END-INFO-DIR-ENTRY
+
+   This file documents Dictionary, a client software for a RFC 2229
+dict server.
+
+   Copyright (C) 1998, 2002 Torsten Hilbrich
+
+   Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being "A GNU Manual",
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled "GNU Free Documentation License" in
+the Emacs manual.
+
+   (a) The FSF's Back-Cover Text is: "You have freedom to copy and
+modify this GNU Manual, like GNU software.  Copies published by the
+Free Software Foundation raise funds for GNU development."
+
+   This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+
+File: dictionary.info,  Node: Top,  Next: Installation,  Prev: (dir),  Up: (dir)
+
+Dictionary
+**********
+
+   Dictionary is a Emacs(1) package for accessing a dictionary server
+providing word definitions.
+
+   The Request for Comments 2229 `http://www.dict.org/rfc2229.txt'
+defines a protocol for communication between a dictionary client and a
+dictionary server.  The dictionary server keeps several databases
+(containing dictionary definitions) and provides an interface for the
+client to list the definition for a word and to search for words
+matching to pattern.
+
+   This software implements the client side of that protocol.  It allows
+you to use a dictionary server (for example provided by the site
+`www.dict.org') from within Emacs.
+
+   Please note that the dictionary protocol uses the port 2628 which is
+likely to be blocked by firewalls.  It is possible to connect to the
+dictionary server through a HTTP proxy similiar to the way HTTPS
+connections on port 443 are relayed, *Note HTTP Proxy::.
+
+* Menu:
+
+* Installation::                Installation of the package
+* Usage::                       User manual
+* Variables::                   Customizing dictionary's behaviour
+* User callable Functions::
+* Index::                       Variable, functions, and concept index.
+
+   ---------- Footnotes ----------
+
+   (1) In the following manual Emacs is a name for both GNU Emacs and
+XEmacs.  If I need to differ between both Emacs variants I will use
+these names instead
+
+
+File: dictionary.info,  Node: Installation,  Next: Usage,  Prev: Top,  Up: Top
+
+Installation
+************
+
+   The dictionary client is distributes as `tar.gz' file.  You can
+found the latest version at
+`http://www.myrkr.in-berlin.de/dictionary/dictionary-1.7.2.tar.gz'.
+Please download this file now before continue reading.
+
+Unpacking
+=========
+
+   To unpack the archive use the following command:
+     gzip -dc dictionary-1.7.2.tar.gz | tar -xf -
+
+   If you have a `GNU tar' installed, you can also the following
+command:
+     tar -xzf dictionary-1.7.2.tar.gz
+
+   A directory named `dictionary-1.7.2' will have been created by these
+commands.
+
+Installing the files
+====================
+
+   There are several ways of installing this package.  If you are a
+Debian user you can create a Debian Package for installation using the
+`dpkg' command.  XEmacs users can create a XEmacs package which can be
+easily installed too.  Other users have to compile the package using
+the supplied `Makefile' and manually install the files.  All these
+installation methods are described in the following sections.
+
+Debian
+------
+
+   If you are using a current Debian distribution (one that support the
+emacsen package system) and have the `dpkg-dev' package installed (for
+running `dpkg-buildpackage') you can use the supplied debian support:
+
+     make debian
+
+   This will create a package named `dictionary-1.7.2-1_all.deb' or
+similiar in the parent directory of `dictionary-1.7.2'.  You can now
+install this package as root, it will automatically byte-compile itself
+for all installed emacs versions and provide a startup-file which
+autoloads this package. In the configuration example given below you
+can omit the autoload lines.
+
+   If you no longer want to use this package, you can remove it using:
+
+     dpkg -r dictionary
+
+XEmacs 21
+---------
+
+   XEmacs starting with version 21 has support for so called _xemacs
+packages_.  These packages are also supported, you can create them
+using:
+     make EMACS=xemacs package
+
+   The created package will be named `dictionary-1.7-pkg.tar.gz' and
+stored within the current directory.  If you don't want to install this
+package manually, you can use the following command, provided you have
+sufficient privileges (if unsure, login as super user):
+
+     make EMACS=xemacs package-install
+
+   If you have more than one XEmacs versions installed make sure the
+`EMACS' argument to make points to the correct binary.
+
+   Please note, dictionary is now part of the official XEmacs package
+distribution.  This means you can install this package using the
+integrated package management.
+
+Manual Installation
+-------------------
+
+   The first step in the manual installation is the byte compilation of
+the lisp file for quicker loading and execution.  Using the supplied
+`Makefile' this is quite easy, just invoke:
+
+     make
+
+   in the `dictionary-1.7.2' sub directory.  This will use emacs as the
+name of the Emacs executable.  If you want to use a different location
+or a different program (for example, XEmacs) for byte compilation, use
+the `EMACS' argument to the `Makefile' like in the following example
+for XEmacs:
+
+     make EMACS=xemacs
+
+   If your custom package is not up-to-date expect some warnings about
+free variables.
+
+   The next step is the installation of the files.  At the moment there
+is no support for this step, you have to copy the compiled lisp files
+(named `*.elc') to a directory within your LOAD-PATH by yourself.
+Usually the directories `/usr/lib/emacs/site-lisp' or
+`/usr/local/lib/emacs/site-lisp' are suitable locations for this.
+XEmacs users please use the according `xemacs/site-lisp' directory.
+
+   The final step is to inform your Emacs of the newly installed
+package.  I added a `dictionary-init.el' file to the distribution which
+contains some `autoload' instructions to let Emacs know of the new
+functions.  You can now insert the contents of this file in your
+`.emacs' or `.xemacs' file or install `dictionary-init.el' into the
+`site-lisp' directory and load it using:
+
+     (load "dictionary-init")
+
+Key Bindings
+============
+
+   You probably want to define some key combinations to invoke the
+`dictionary-search' or `dictionary-match' functions.
+
+   The following example shows the key bindings I'm using myself for
+this package.  These are not supplied by this package because the `C-c'
+prefix key together with a letter suffix are reserved for the user
+itself.  To activate these bindings insert them into your `.emacs' or
+`.xemacs' file:
+
+     ;; key bindings for the dictionary package
+     (global-set-key "\C-cs" 'dictionary-search)
+     (global-set-key "\C-cm" 'dictionary-match-words)
+
+
+File: dictionary.info,  Node: Usage,  Next: Variables,  Prev: Installation,  Up: Top
+
+Usage
+*****
+
+   The default setup of dictionary connects to `dict://dict.org', so
+the package should work without modification if you are connected to
+the Internet.  Otherwise you should configure the package first, *Note
+Variables::.
+
+
+File: dictionary.info,  Node: Variables,  Next: User callable Functions,  Prev: Usage,  Up: Top
+
+Variables
+*********
+
+* Menu:
+
+* HTTP Proxy::                  Configuration for HTTP proxy support
+
+
+File: dictionary.info,  Node: HTTP Proxy,  Prev: Variables,  Up: Variables
+
+HTTP Proxy
+==========
+
+
+File: dictionary.info,  Node: User callable Functions,  Next: Index,  Prev: Variables,  Up: Top
+
+User callable Functions
+***********************
+
+
+File: dictionary.info,  Node: Index,  Prev: User callable Functions,  Up: Top
+
+Index
+*****
+
+* Menu:
+
+
+Tag Table:
+Node: Top1265
+Ref: Top-Footnote-12587
+Node: Installation2746
+Node: Usage7409
+Node: Variables7733
+Node: HTTP Proxy7932
+Node: User callable Functions8033
+Node: Index8181
+
+End Tag Table

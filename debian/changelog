@@ -1,3 +1,18 @@
+dictionary (1.7.4-1) unstable; urgency=low
+
+  * dictionary.el (dictionary-do-matching): removed quotes around
+    dictionary name and match strategy
+	
+  * dictionary.el (dictionary-do-search): removed quotes around dictionary
+    name
+	
+  * dictionary.el (dictionary-display-more-info): removed quotes around
+    dictionary name
+
+  This problem (occurring with jdictd) was reported by E C Vijil
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Fri, 15 Mar 2002 21:19:23 +0100
+
 dictionary (1.7.3-1) unstable; urgency=low
 
   * dictionary.el (dictionary-default-popup-strategy): added this

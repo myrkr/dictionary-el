@@ -1,0 +1,19 @@
+(dictionary
+  (standards-version 1.1
+   version VERSION
+   author-version AUTHOR_VERSION
+   date DATE
+   build-date BUILD_DATE
+   maintainer MAINTAINER
+   distribution xemacs
+   priority low
+   category CATEGORY
+   dump nil
+   description "Interface to RFC2229 dictionary servers."
+   filename FILENAME
+   md5sum MD5SUM
+   size SIZE
+   provides (dictionary connection link)
+   requires (REQUIRES)
+   type regular
+))

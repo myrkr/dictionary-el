@@ -59,7 +59,13 @@
    custom.el  file  in  the above GNU Emacs. Please update to the current
    version  whenever possible. XEmacs 21 and Emacs 20 as well as Emacs 21
    have been tested too.
-     * Current version (1.7.3) of this package
+     * Current version (1.7.2) of this package
+     * Version 1.5.1 of this package
+     * Version 1.4.1 of this package
+     * Version 1.3.3 of this package
+     * Version 1.2.1 of this package
+     * Version 1.1 of this package
+     * Initial version (1.0) of this package
 
    I  you  want  to  know  more  about the differences please look at the
    ChangeLog.
@@ -74,14 +80,14 @@
                              Unpacking the archive
 
    The package is distributed as tar.gz file. You unpack it using:
-gzip -dc dictionary-1.7.3.tar.gz | tar xf -
+gzip -dc dictionary-1.7.2.tar.gz | tar xf -
 
    or
-tar -xzf dictionary-1.7.3.tar.gz
+tar -xzf dictionary-1.7.2.tar.gz
 
    (with  the  version number subject to change) depending on whether you
    are  using  GNU  tar  which  support the z flag for compression. After
-   unpacking  the  archive  a directory dictionary-1.7.3 has been created
+   unpacking  the  archive  a directory dictionary-1.7.2 has been created
    containing the necessary files.
 
                                  Installation
@@ -93,8 +99,8 @@ Debian
    dpkg-buildpackage) you can use the supplied debian support.
 make debian
 
-   This  will  create  a  package  named  dictionary-1.7.3-1_i386.deb  or
-   similiar  in  the  parent  directory  of dictionary-1.7.3. You can now
+   This  will  create  a  package  named  dictionary-1.7.2-1_i386.deb  or
+   similiar  in  the  parent  directory  of dictionary-1.7.2. You can now
    install  this  package  as  root,  it  will automatically byte-compile
    itself  for  all  installed  emacs versions and provide a startup-file
    which autoloads this package. In the configuration example given below
