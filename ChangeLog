@@ -1,7 +1,35 @@
+2002-04-30  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (VERSION): XEmacs package 1.10 released.
+
+2002-04-29  Torsten Hilbrich  <dictionary@myrkr.in-berlin.de>
+
+	* dictionary.el (dictinary-display-tooltip): added support for
+	  binding tooltip function to any mouse event (wished by Samir
+	  Saidani)
+	
+	* dictionary.el (dictionary-do-search): no longer output matching
+	words when using tooltips (found by Samir Saidani)
+
+	* debian/control: added build-depends line
+
+2002-04-24  youngs  <youngs@myrkr>
+
+	* Makefile, ChangeLog: Increment Makefile $VERSION
+
+2002-04-24  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (VERSION): XEmacs package 1.09 released.
+
 2002-03-20  Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 	
 	* dictionary.el (dictionary-do-search): if the word is not found,
 	  lookup similiar words using the match function 
+	  BTW: I had to resolve a conflict here
+
+2002-03-25  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (VERSION): 1.08 released.
 
 2002-03-15  Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 	

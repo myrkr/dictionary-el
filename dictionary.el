@@ -2,7 +2,7 @@
 
  ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
  ;; Keywords: interface, dictionary
- ;; $Id: dictionary.el,v 1.36 2002/03/18 18:13:59 torsten Exp $
+ ;; $Id: dictionary.el,v 1.38 2002/04/29 18:38:03 torsten Exp $
 
  ;; This file is free software; you can redistribute it and/or modify
  ;; it under the terms of the GNU General Public License as published by
@@ -611,7 +611,7 @@ This function knows about the special meaning of quotes (\")"
   (dictionary-pre-buffer)
   (dictionary-do-search word dictionary function))
 
-(defun dictionary-do-search (word dictionary function)
+(defun dictionary-do-search (word dictionary function &optional nomatching)
   "The workhorse for doing the search"
 
   (message "Searching for %s in %s" word dictionary)
@@ -623,13 +623,15 @@ This function knows about the special meaning of quotes (\")"
   (let ((reply (dictionary-read-reply-and-split)))
     (if (dictionary-check-reply reply 552)
 	(progn
-	  (beep)
-	  (insert "Word not found, maybe you look for one of these words\n\n")
-	  (dictionary-do-matching word
-				  dictionary
-				  "."
-				  'dictionary-display-only-match-result)
-	  (dictionary-post-buffer))
+	  (unless nomatching
+	    (beep)
+	    (insert "Word not found, maybe you look "
+		    "for one of these words\n\n")
+	    (dictionary-do-matching word
+				    dictionary
+				    "."
+				    'dictionary-display-only-match-result)
+	    (dictionary-post-buffer)))
       (if (dictionary-check-reply reply 550)
 	  (error "Dictionary \"%s\" is unknown, please select an existing one."
 		 dictionary)
@@ -1125,7 +1127,7 @@ It presents the word at point as default input and allows editing it."
   (interactive)
   (unwind-protect
       (let ((dictionary (or dictionary dictionary-default-dictionary)))
-	(dictionary-do-search word dictionary 'dictionary-read-definition))
+	(dictionary-do-search word dictionary 'dictionary-read-definition t))
     nil))
   
 (defun dictionary-read-definition (reply)
@@ -1140,18 +1142,18 @@ It presents the word at point as default input and allows editing it."
 
 (defun dictionary-display-tooltip (event)
   "Search the current word in the `dictionary-tooltip-dictionary'."
+  (interactive "e")
   (if dictionary-tooltip-dictionary
       (let ((word (save-window-excursion
 		    (save-excursion
 		      (mouse-set-point event)
 		      (current-word)))))
 	(let ((definition 
-		(dictionary-decode-charset 
-		 (dictionary-definition word 
-					dictionary-tooltip-dictionary)
-		 dictionary-tooltip-dictionary)))
+		(dictionary-definition word dictionary-tooltip-dictionary)))
 	  (if definition 
-	      (tooltip-show definition))
+	      (tooltip-show 
+	       (dictionary-decode-charset definition 
+					  dictionary-tooltip-dictionary)))
 	  t))
     nil))
 
