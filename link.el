@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: interface, hypermedia
-;; $Id: link.el,v 1.9 2001/11/24 12:18:26 torsten Exp $
+;; $Id: link.el,v 1.11 2001/12/21 17:55:49 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -109,8 +109,13 @@ link.  Upon clicking the `function' is called with `data' as argument."
 (defun link-initialize-keymap (keymap)
   "Defines the necessary bindings inside keymap"
 
-  (define-key keymap [mouse-2] 'link-mouse-click)
-  (define-key keymap "\r" 'link-selected)
-  (define-key keymap "\M-\r" 'link-selected-all))
+  (if (and (boundp 'running-xemacs) running-xemacs)
+      (progn
+	(define-key keymap [button2] 'link-mouse-click)
+	(define-key keymap [(meta button2)] 'link-mouse-click-all))
+    (define-key keymap [mouse-2] 'link-mouse-click)
+    (define-key keymap [M-mouse-2] 'link-mouse-click-all))
+    (define-key keymap "\r" 'link-selected)
+    (define-key keymap "\M-\r" 'link-selected-all))
 
 (provide 'link)

@@ -1,3 +1,10 @@
+dictionary (1.7.2-1) unstable; urgency=low
+
+  * link.el (link-initialize-keymap): fixed keybinding bug (reported by
+    David A. Panariti)
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Fri, 21 Dec 2001 18:50:20 +0100
+
 dictionary (1.7.1-1) unstable; urgency=low
 
   * Fixed bug in dictionary-coding-system, the detection of non-mule
