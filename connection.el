@@ -1,8 +1,8 @@
 ;;; connection.el -- handling a tcp based connection
 
-;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
+;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: network
-;; $Id: connection.el,v 1.7 2001/04/26 16:56:21 torsten Exp torsten $
+;; $Id: connection.el,v 1.9 2001/11/24 12:18:26 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

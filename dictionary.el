@@ -1,262 +1,310 @@
-; dictionary.el -- an interface to RFC 2229 dictionary server
+ ;; dictionary.el -- an interface to RFC 2229 dictionary server
 
-;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
-;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.27 2001/09/02 08:39:47 torsten Exp $
+ ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+ ;; Keywords: interface, dictionary
+ ;; $Id: dictionary.el,v 1.30 2001/12/09 14:40:04 torsten Exp $
 
-;; This file is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+ ;; This file is free software; you can redistribute it and/or modify
+ ;; it under the terms of the GNU General Public License as published by
+ ;; the Free Software Foundation; either version 2, or (at your option)
+ ;; any later version.
 
-;; This file is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+ ;; This file is distributed in the hope that it will be useful,
+ ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ ;; GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+ ;; You should have received a copy of the GNU General Public License
+ ;; along with GNU Emacs; see the file COPYING.  If not, write to
+ ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ ;; Boston, MA 02111-1307, USA.
 
-(eval-when-compile
-  (require 'cl))
+ (eval-when-compile
+   (require 'cl))
 
-(require 'easymenu)
-(require 'custom)
-(require 'connection)
-(require 'link)
+ (require 'easymenu)
+ (require 'custom)
+ (require 'connection)
+ (require 'link)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Stuff for customizing.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Stuff for customizing.
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(eval-when-compile
-  (unless (fboundp 'defface)
-	  (message "Please update your custom.el file: %s"
-		   "http://www.dina.kvl.dk/~abraham/custom/"))
-  
-  (unless (fboundp 'defgroup)
-	  (defmacro defgroup (&rest ignored))
-	  (defmacro defcustom (var value doc &rest ignored)
-	    (list 'defvar var value doc))))
+ (eval-when-compile
+   (unless (fboundp 'defface)
+	   (message "Please update your custom.el file: %s"
+		    "http://www.dina.kvl.dk/~abraham/custom/"))
 
-(defgroup dictionary nil
-  "Client for accessing the dictd server based dictionaries"
-  :group 'help
-  :group 'hypermedia)
+   (unless (fboundp 'defgroup)
+	   (defmacro defgroup (&rest ignored))
+	   (defmacro defcustom (var value doc &rest ignored)
+	     (list 'defvar var value doc))))
 
-(defcustom dictionary-server
-  "dict.org"
-  "This server is contacted for searching the dictionary"
-  :group 'dictionary
-  :type 'string)
+ (defgroup dictionary nil
+   "Client for accessing the dictd server based dictionaries"
+   :group 'hypermedia)
 
-(defcustom dictionary-port
-  2628
-  "The port of the dictionary server.
-This port is propably always 2628 so there should be no need to modify it."
-  :group 'dictionary
-  :type 'number)
+ (defgroup dictionary-proxy nil
+   "Proxy configuration options for the dictionary client"
+   :group 'dictionary)
 
-(defcustom dictionary-identification
-  "dictionary.el emacs lisp dictionary client"
-  "This is the identification string that will be sent to the server."
-  :group 'dictionary
-  :type 'string)
+ (defcustom dictionary-server
+   "dict.org"
+   "This server is contacted for searching the dictionary"
+   :group 'dictionary
+   :type 'string)
 
-(defcustom dictionary-default-dictionary
-  "*"
-  "The dictionary which is used for searching definitions and matching.
-* and ! have a special meaning, * search all dictionaries, ! search until
-one dictionary yields matches."
-  :group 'dictionary
-  :type 'string)
+ (defcustom dictionary-port
+   2628
+   "The port of the dictionary server.
+ This port is propably always 2628 so there should be no need to modify it."
+   :group 'dictionary
+   :type 'number)
 
-(defcustom dictionary-default-strategy
-  "."
-  "The default strategy for listing matching words."
-  :group 'dictionary
-  :type 'string)
+ (defcustom dictionary-identification
+   "dictionary.el emacs lisp dictionary client"
+   "This is the identification string that will be sent to the server."
+   :group 'dictionary
+   :type 'string)
 
-(defcustom dictionary-create-buttons
-  t
-  "Create some clickable buttons on top of the window if non-nil"
-  :group 'dictionary
-  :type 'boolean)
+ (defcustom dictionary-default-dictionary
+   "*"
+   "The dictionary which is used for searching definitions and matching.
+ * and ! have a special meaning, * search all dictionaries, ! search until
+ one dictionary yields matches."
+   :group 'dictionary
+   :type 'string)
 
-(defcustom dictionary-mode-hook
-  nil
-  "Hook run in dictionary mode buffers."
-  :group 'dictionary
-  :type 'hook)
+ (defcustom dictionary-default-strategy
+   "."
+   "The default strategy for listing matching words."
+   :group 'dictionary
+   :type 'string)
 
-(if (fboundp 'defface)
-    (progn
+ (defcustom dictionary-create-buttons
+   t
+   "Create some clickable buttons on top of the window if non-nil."
+   :group 'dictionary
+   :type 'boolean)
 
-(defface dictionary-word-entry-face
-  '((((type x))
-     (:italic t))
-    (((type tty) (class color))
-     (:foreground "green"))
-    (t
-     (:inverse t)))
-  "The face that is used for displaying the initial word entry line."
-  :group 'dictionary)
+ (defcustom dictionary-mode-hook
+   nil
+   "Hook run in dictionary mode buffers."
+   :group 'dictionary
+   :type 'hook)
 
-(defface dictionary-button-face
-  '((t
-     (:bold t)))
-  "The face that is used for displaying buttons."
-  :group 'dictionary)
+ (defcustom dictionary-use-http-proxy
+   nil
+   "Connects via a HTTP proxy using the CONNECT command when not nil."
+   :group 'dictionary-proxy
+   :type 'boolean)
 
-(defface dictionary-reference-face
-  '((((type x)
-      (class color)
-      (background dark))
-     (:foreground "yellow"))
-    (((type tty)
-      (class color)
-      (background dark))
-     (:foreground "cyan"))
-    (((class color)
-      (background light))
-     (:foreground "blue"))
-    (t
-     (:underline t)))
-  
-  "The face that is used for displaying a reference word."
-  :group 'dictionary)
+ (defcustom dictionary-proxy-server
+   "proxy"
+   "The name of the HTTP proxy to use when dictionary-use-http-proxy is set."
+   :group 'dictionary-proxy
+   :type 'string)
+
+ (defcustom dictionary-proxy-port
+   3128
+   "The port of the proxy server, used only when dictionary-use-http-proxy is set."
+   :group 'dictionary-proxy
+   :type 'number)
+
+;; Define only when coding-system-list is available
+(when (fboundp 'coding-system-list)
+  (defcustom dictionary-coding-systems-for-dictionaries
+    '( ("mueller" . koi8-r))
+    "Mapping of dictionaries to coding systems.
+ Each entry in this list defines the coding system to be used for that
+ dictionary.  The default coding system for all other dictionaries
+ is utf-8"
+    :group 'dictionary
+    :type `(repeat (cons :tag "Association" 
+			 (string :tag "Dictionary name") 
+			 (choice :tag "Coding system"
+				 :value 'utf-8
+				 ,@(mapcar (lambda (x) (list 'const x))
+					   (coding-system-list))
+				 ))))
 
 )
 
-;; else
-(copy-face 'italic 'dictionary-word-entry-face)
-(copy-face 'bold 'dictionary-button-face)
-(copy-face 'default 'dictionary-reference-face)
-(set-face-foreground 'dictionary-reference-face "blue"))
+ (if (fboundp 'defface)
+     (progn
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Buffer local variables for storing the current state
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ (defface dictionary-word-entry-face
+   '((((type x))
+      (:italic t))
+     (((type tty) (class color))
+      (:foreground "green"))
+     (t
+      (:inverse t)))
+   "The face that is used for displaying the initial word entry line."
+   :group 'dictionary)
 
-(defvar dictionary-window-configuration
-  nil
-  "The window configuration to be restored upon closing the buffer")
+ (defface dictionary-button-face
+   '((t
+      (:bold t)))
+   "The face that is used for displaying buttons."
+   :group 'dictionary)
 
-(defvar dictionary-selected-window
-  nil
-  "The currently selected window")
+ (defface dictionary-reference-face
+   '((((type x)
+       (class color)
+       (background dark))
+      (:foreground "yellow"))
+     (((type tty)
+       (class color)
+       (background dark))
+      (:foreground "cyan"))
+     (((class color)
+       (background light))
+      (:foreground "blue"))
+     (t
+      (:underline t)))
 
-(defvar dictionary-position-stack
-  nil
-  "The history buffer for point and window position")
+   "The face that is used for displaying a reference word."
+   :group 'dictionary)
 
-(defvar dictionary-data-stack
-  nil
-  "The history buffer for functions and arguments")
+ )
 
-(defvar dictionary-positions
-  nil
-  "The current positions")
+ ;; else
+ (copy-face 'italic 'dictionary-word-entry-face)
+ (copy-face 'bold 'dictionary-button-face)
+ (copy-face 'default 'dictionary-reference-face)
+ (set-face-foreground 'dictionary-reference-face "blue"))
 
-(defvar dictionary-current-data
-  nil
-  "The item that will be placed on stack next time")
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Buffer local variables for storing the current state
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Global variables
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar dictionary-mode-map
-  nil
-  "Keymap for dictionary mode")
+ (defvar dictionary-window-configuration
+   nil
+   "The window configuration to be restored upon closing the buffer")
 
-(defvar dictionary-connection 
-  nil
-  "The current network connection")
+ (defvar dictionary-selected-window
+   nil
+   "The currently selected window")
 
-(defvar dictionary-instances
-  0
-  "The number of open dictionary buffers")
+ (defvar dictionary-position-stack
+   nil
+   "The history buffer for point and window position")
 
-(defvar dictionary-marker 
-  nil
-  "Stores the point position while buffer display.")
+ (defvar dictionary-data-stack
+   nil
+   "The history buffer for functions and arguments")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Basic function providing startup actions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ (defvar dictionary-positions
+   nil
+   "The current positions")
 
-;;;###autoload
-(defun dictionary-mode ()
-  "This is a mode for searching a dictionary server implementing
-the protocol defined in RFC 2229.
+ (defvar dictionary-current-data
+   nil
+   "The item that will be placed on stack next time")
 
-This is a quick reference to this mode describing the default key bindings:
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Global variables
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ (defvar dictionary-mode-map
+   nil
+   "Keymap for dictionary mode")
 
-* q close the dictionary buffer
-* h display this help information
-* s ask for a new word to search
-* d search the word at point
-* n or Tab place point to the next link
-* p or S-Tab place point to the prev link
+ (defvar dictionary-connection 
+   nil
+   "The current network connection")
 
-* m ask for a pattern and list all matching words.
-* D select the default dictionary
-* M select the default search strategy
+ (defvar dictionary-instances
+   0
+   "The number of open dictionary buffers")
 
-* Return or Button2 visit that link
-* M-Return or M-Button2 search the word beneath link in all dictionaries
-"
+ (defvar dictionary-marker 
+   nil
+   "Stores the point position while buffer display.")
 
-  (unless (eq major-mode 'dictionary-mode)
-    (incf dictionary-instances))
-  
-  (kill-all-local-variables)
-  (buffer-disable-undo)
-  (use-local-map dictionary-mode-map)
-  (setq major-mode 'dictionary-mode)
-  (setq mode-name "Dictionary")
+ (defvar dictionary-color-support 
+   (condition-case nil
+       (x-display-color-p)
+     (error nil))
+   "Stores the point position while buffer display.")
 
-  (make-local-variable 'dictionary-data-stack)
-  (setq dictionary-data-stack nil)
-  (make-local-variable 'dictionary-position-stack)
-  (setq dictionary-position-stack nil)
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Basic function providing startup actions
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (make-local-variable 'dictionary-current-data)
-  (make-local-variable 'dictionary-positions)
+ ;;;###autoload
+ (defun dictionary-mode ()
+   "This is a mode for searching a dictionary server implementing
+ the protocol defined in RFC 2229.
 
-  (make-local-variable 'dictionary-default-dictionary)
-  (make-local-variable 'dictionary-default-strategy)
+ This is a quick reference to this mode describing the default key bindings:
 
-  (make-local-hook 'kill-buffer-hook)
-  (add-hook 'kill-buffer-hook 'dictionary-close t t)
-  (run-hooks 'dictionary-mode-hook))
+ * q close the dictionary buffer
+ * h display this help information
+ * s ask for a new word to search
+ * d search the word at point
+ * n or Tab place point to the next link
+ * p or S-Tab place point to the prev link
 
-;;;###autoload
-(defun dictionary ()
-  "Create a new dictonary buffer and install dictionary-mode"
-  (interactive)
-  (let ((coding-system nil))
-    (if (and (functionp 'coding-system-list)
-	     (member 'utf-8 (coding-system-list)))
- 	(setq coding-system 'utf-8))
-    (let ((coding-system-for-read coding-system)
-          (coding-system-for-write coding-system))
-      (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
-            (window-configuration (current-window-configuration))
-	    (selected-window (frame-selected-window)))
-	
-        (switch-to-buffer-other-window buffer)
-        (dictionary-mode)
-	
-        (make-local-variable 'dictionary-window-configuration)
-        (make-local-variable 'dictionary-selected-window)
-        (setq dictionary-window-configuration window-configuration)
-	(setq dictionary-selected-window selected-window)
-        (dictionary-check-connection)
-        (dictionary-pre-buffer)
-        (dictionary-post-buffer)))))
+ * m ask for a pattern and list all matching words.
+ * D select the default dictionary
+ * M select the default search strategy
+
+ * Return or Button2 visit that link
+ * M-Return or M-Button2 search the word beneath link in all dictionaries
+ "
+
+   (unless (eq major-mode 'dictionary-mode)
+     (incf dictionary-instances))
+
+   (kill-all-local-variables)
+   (buffer-disable-undo)
+   (use-local-map dictionary-mode-map)
+   (setq major-mode 'dictionary-mode)
+   (setq mode-name "Dictionary")
+
+   (make-local-variable 'dictionary-data-stack)
+   (setq dictionary-data-stack nil)
+   (make-local-variable 'dictionary-position-stack)
+   (setq dictionary-position-stack nil)
+
+   (make-local-variable 'dictionary-current-data)
+   (make-local-variable 'dictionary-positions)
+
+   (make-local-variable 'dictionary-default-dictionary)
+   (make-local-variable 'dictionary-default-strategy)
+
+   (make-local-hook 'kill-buffer-hook)
+   (add-hook 'kill-buffer-hook 'dictionary-close t t)
+   (run-hooks 'dictionary-mode-hook))
+
+ ;;;###autoload
+ (defun dictionary ()
+   "Create a new dictonary buffer and install dictionary-mode"
+   (interactive)
+   (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
+	 (window-configuration (current-window-configuration))
+	 (selected-window (frame-selected-window)))
+     
+     (switch-to-buffer-other-window buffer)
+     (dictionary-mode)
+     
+     (make-local-variable 'dictionary-window-configuration)
+     (make-local-variable 'dictionary-selected-window)
+     (setq dictionary-window-configuration window-configuration)
+     (setq dictionary-selected-window selected-window)
+     (dictionary-check-connection)
+     (dictionary-new-buffer)
+     (dictionary-store-positions)
+     (dictionary-store-state 'dictionary-new-buffer nil)))
+
+(defun dictionary-new-buffer (&rest ignore)
+  "Create a new and clean buffer"
+
+  (dictionary-pre-buffer)
+  (dictionary-post-buffer))
+
 
 (unless dictionary-mode-map
   (setq dictionary-mode-map (make-sparse-keymap))
@@ -292,17 +340,43 @@ This is a quick reference to this mode describing the default key bindings:
   "Check if there is already a connection open"
   (if (not (and dictionary-connection
 		(eq (connection-status dictionary-connection) 'up)))
-      (let ((coding-system nil))
-	(if (and (functionp 'coding-system-list)
-		 (member 'utf-8 (coding-system-list)))
-	    (setq coding-system 'utf-8))
+      (let ((wanted 'raw-text)
+	    (coding-system nil))
+	(if (and (fboundp 'coding-system-list)
+		 (member wanted (coding-system-list)))
+	    (setq coding-system wanted))
 	(let ((coding-system-for-read coding-system)
 	      (coding-system-for-write coding-system))
 	  (message "Opening connection to %s:%s" dictionary-server
 		   dictionary-port)
 	  (connection-close dictionary-connection)
 	  (setq dictionary-connection
-		(connection-open dictionary-server dictionary-port))
+		(if dictionary-use-http-proxy
+		    (connection-open dictionary-proxy-server 
+				     dictionary-proxy-port)
+		  (connection-open dictionary-server dictionary-port)))
+
+	  (when dictionary-use-http-proxy
+	    (message "Proxy CONNECT to %s:%d" 
+		     dictionary-proxy-server
+		     dictionary-proxy-port)
+	    (dictionary-send-command (format "CONNECT %s:%d HTTP/1.1"
+					     dictionary-server
+					     dictionary-port))
+	    ;; just a \r\n combination
+	    (dictionary-send-command "")
+
+	    ;; read first line of reply
+	    (let* ((reply (dictionary-read-reply))
+		   (reply-list (dictionary-split-string reply)))
+	      ;; first item is protocol, second item is code
+	      (unless (= (string-to-number (cadr reply-list)) 200)
+		(error "Bad reply from proxy server %s" reply))
+	      
+	      ;; skip the following header lines until empty found
+	      (while (not (equal reply ""))
+		(setq reply (dictionary-read-reply)))))
+
 	  (dictionary-check-initial-reply)
 	  (dictionary-send-command (concat "client " dictionary-identification))
 	  (let ((reply (dictionary-read-reply-and-split)))
@@ -350,7 +424,7 @@ This is a quick reference to this mode describing the default key bindings:
 (defun dictionary-read-reply ()
   "Read the reply line from the server"
   (let ((answer (connection-read-crlf dictionary-connection)))
-    (if (string-match "\r" answer)
+    (if (string-match "\r?\n" answer)
 	(substring answer 0 (match-beginning 0))
       answer)))
 
@@ -411,7 +485,33 @@ This function knows about the special meaning of quotes (\")"
   (let ((number (dictionary-reply-code reply)))
     (and (numberp number)
 	 (= number code))))
+
+(defun dictionary-coding-system (dictionary)
+  "Select coding system to use for that dictionary"
+  (unless (boundp 'dictionary-coding-systems-for-dictionaries)
+    nil)
+  (let ((coding-system
+	 (or (cdr (assoc dictionary
+			 dictionary-coding-systems-for-dictionaries))
+	     'utf-8)))
+    (if (member coding-system (coding-system-list))
+	coding-system
+      nil)))
     
+(defun dictionary-decode-charset (text dictionary)
+  "Convert the text from the charset defined by the dictionary given."
+  (let ((coding-system (dictionary-coding-system dictionary)))
+    (if coding-system
+	(decode-coding-string text coding-system)
+      text)))
+
+(defun dictionary-encode-charset (text dictionary)
+  "Convert the text to the charset defined by the dictionary given."
+  (let ((coding-system (dictionary-coding-system dictionary)))
+    (if coding-system
+	(decode-coding-string text coding-system)
+      text)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Communication functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -453,7 +553,6 @@ This function knows about the special meaning of quotes (\")"
     (goto-char (car position))
     (setq dictionary-current-data data)))
       
-
 ;; The normal search
 
 (defun dictionary-new-search (args &optional all)
@@ -480,7 +579,8 @@ This function knows about the special meaning of quotes (\")"
 
   (message "Searching for %s in %s" word dictionary)
   (dictionary-send-command (concat "define \"" dictionary "\" \""
-				   word "\""))
+				   (dictionary-encode-charset word dictionary)
+				   "\""))
   (message nil)
   (let ((reply (dictionary-read-reply-and-split)))
     (if (dictionary-check-reply reply 552)
@@ -521,11 +621,11 @@ This function knows about the special meaning of quotes (\")"
 
 	(insert "\n       ")
 
-	(link-insert-link "[Select Default Dictionary]"
+	(link-insert-link "[Select Dictionary]"
 			  'dictionary-button-face
 			  'dictionary-select-dictionary nil
 			  "Mouse-2 to select dictionary for future searches")
-	(insert " ")
+	(insert "         ")
 	(link-insert-link "[Select Match Strategy]"
 			  'dictionary-button-face
 			  'dictionary-select-strategy nil
@@ -536,6 +636,7 @@ This function knows about the special meaning of quotes (\")"
 (defun dictionary-post-buffer ()
   "These commands are executed at the end of a new buffer"
   (goto-char dictionary-marker)
+  
   (set-buffer-modified-p nil)
   (toggle-read-only 1))
 
@@ -568,24 +669,27 @@ This function knows about the special meaning of quotes (\")"
 (defun dictionary-display-word-definition (reply word dictionary)
   "Insert the definition for the current word"
   (let ((start (point)))
-    (insert reply)
+    (insert (dictionary-decode-charset reply dictionary))
     (insert "\n\n")
     (let ((regexp "\\({+\\)\\([^ '\"][^}]*\\)\\(}+\\)"))
       (goto-char start)
       (while (< (point) (point-max))
 	(if (search-forward-regexp regexp nil t)
-	    (progn
-	      (replace-match "\\2")
-	      ;; Compensate for the replacement
-	      (let* ((brace-match-length (- (match-end 1)
-					    (match-beginning 1)))
-		     (match-start (- (match-beginning 2)
-				     brace-match-length))
-		     (match-end (- (match-end 2)
-				   brace-match-length)))
-		(dictionary-mark-reference match-start match-end
-					   'dictionary-new-search
-					   word dictionary)))
+	    (let ((match-start (match-beginning 1))
+		  (match-end (match-end 2)))
+	      (if dictionary-color-support
+		  (progn
+		    (replace-match "\\2")
+		    ;; Compensate for the replacement
+		    (let ((brace-match-length (- (match-end 1)
+						 (match-beginning 1))))
+		      (setq match-start (- (match-beginning 2)
+					   brace-match-length))
+		      (setq match-end (- (match-end 2)
+					 brace-match-length)))))
+	      (dictionary-mark-reference match-start match-end
+					 'dictionary-new-search
+					 word dictionary))
 	  (goto-char (point-max)))))))
 
 (defun dictionary-mark-reference (start end call displayed-word dictionary)
@@ -670,6 +774,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
       (dictionary-display-more-info param)
     (let ((dictionary (car param)))
       (setq dictionary-default-dictionary dictionary)
+      (dictionary-restore-state)
       (message "Dictionary %s has been selected" dictionary))))
     
 (defun dictionary-display-more-info (param)
@@ -749,6 +854,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 (defun dictionary-set-strategy (strategy &rest ignored)
   "Select this strategy as new default"
   (setq dictionary-default-strategy strategy)
+  (dictionary-restore-state)
   (message "Strategy %s has been selected" strategy))
     
 (defun dictionary-new-matching (word)
@@ -817,8 +923,10 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 		  (word-list (cdr item)))
 	      (insert "Matches from " dictionary ":\n")
 	      (mapcar (lambda (word)
+			(setq word (dictionary-decode-charset word dictionary))
 			(insert "  ")
-			(link-insert-link word 'dictionary-reference-face
+			(link-insert-link word
+					  'dictionary-reference-face
 					  'dictionary-new-search
 					  (cons word dictionary)
 					  "Mouse-2 to lookup word")
@@ -920,7 +1028,8 @@ It presents the word at point as default input and allows editing it."
     (let ((result (mapcar (lambda (item)
 			    (let* ((list (dictionary-split-string item))
 				   (dictionary (car list))
-				   (word (cadr list)))
+				   (word (dictionary-decode-charset 
+					  (cadr list) dictionary)))
 			      (if (equal word "")
 				  [ "-" nil nil]
 				(vector (concat "[" dictionary "] " word)

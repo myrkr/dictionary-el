@@ -1,6 +1,29 @@
+dictionary (1.7-1) unstable; urgency=low
+
+  * Added first support for dictionaries with different encodings than
+    utf-8.
+
+ -- Torsten Hilbrich <email@myrkr.in-berlin.de>  Sun,  9 Dec 2001 14:21:57 +0100
+
+dictionary (1.6-1) unstable; urgency=low
+
+  * added HTTP proxy support using the CONNECT request type
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Tue,  4 Dec 2001 20:22:03 +0100
+
+dictionary (1.5.3-1) unstable; urgency=low
+
+  * changed name of "select dictionary" button
+  * "select dictionary" and "select matching strategie" now has a better
+    feedback (by returning to the previous state)
+  * added support for non-colored display, the links are surrounded by
+    braces
+
+ -- Torsten Hilbrich <Torsten.Hilbrich@gmx.net>  Sun, 14 Oct 2001 16:08:12 +0200
+
 dictionary (1.5.2-1) unstable; urgency=low
 
-  * popup menu now correctly record the selected window
+  * popup menu now correctly records the selected window
 
  -- Torsten Hilbrich <Torsten.Hilbrich@gmx.net>  Sun,  2 Sep 2001 10:40:59 +0200
 

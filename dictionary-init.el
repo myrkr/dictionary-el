@@ -1,3 +1,9 @@
+;; $Id: dictionary-init.el,v 1.1 2001/10/14 14:46:16 torsten Exp $
+;; This file contains the autoload definitions that are used by the
+;; debian package and can also be used in a standalone installation
+;; The XEmacs package has some other means to create the autoload
+;; information.
+
 (autoload 'dictionary-search "dictionary"
   "Ask for a word and search it in all dictionaries" t)
 (autoload 'dictionary-match-words "dictionary"
