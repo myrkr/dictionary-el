@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.20 2001/06/27 16:44:27 torsten Exp $
+;; $Id: dictionary.el,v 1.22 2001/07/06 20:50:18 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 (eval-when-compile
   (require 'cl))
 
+(require 'easymenu)
 (require 'custom)
 (require 'connection)
 (require 'link)
@@ -60,9 +61,9 @@ This port is propably always 2628 so there should be no need to modify it."
 
 (defcustom dictionary-identification
   "dictionary.el emacs lisp dictionary client"
-  "This is the identification string that will be send to the server."
+  "This is the identification string that will be sent to the server."
   :group 'dictionary
-  :type 'number)
+  :type 'string)
 
 (defcustom dictionary-default-dictionary
   "*"
@@ -234,21 +235,21 @@ This is a quick reference to this mode describing the default key bindings:
   (interactive)
   (let ((coding-system nil))
     (if (and (boundp 'coding-system-alist)
-	     (assoc "utf-8" coding-system-alist))
-	(setq coding-system 'utf-8))
+             (assoc "utf-8" coding-system-alist))
+        (setq coding-system 'utf-8))
     (let ((coding-system-for-read coding-system)
-	  (coding-system-for-write coding-system))
+          (coding-system-for-write coding-system))
       (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
-	    (window-configuration (current-window-configuration)))
-
-	(switch-to-buffer-other-window buffer)
-	(dictionary-mode)
-
-	(make-local-variable 'dictionary-window-configuration)
-	(setq dictionary-window-configuration window-configuration)
-	(dictionary-check-connection)
-	(dictionary-pre-buffer)
-	(dictionary-post-buffer)))))
+            (window-configuration (current-window-configuration)))
+	
+        (switch-to-buffer-other-window buffer)
+        (dictionary-mode)
+	
+        (make-local-variable 'dictionary-window-configuration)
+        (setq dictionary-window-configuration window-configuration)
+        (dictionary-check-connection)
+        (dictionary-pre-buffer)
+        (dictionary-post-buffer)))))
 
 (unless dictionary-mode-map
   (setq dictionary-mode-map (make-sparse-keymap))
@@ -284,18 +285,25 @@ This is a quick reference to this mode describing the default key bindings:
   "Check if there is already a connection open"
   (if (not (and dictionary-connection
 		(eq (connection-status dictionary-connection) 'up)))
-      (progn
-	(message "Opening connection to %s:%s" dictionary-server
-		 dictionary-port)
-	(connection-close dictionary-connection)
-	(setq dictionary-connection
-	      (connection-open dictionary-server dictionary-port))
-	(dictionary-check-initial-reply)
-	(dictionary-send-command (concat "client " dictionary-identification))
-	(let ((reply (dictionary-read-reply-and-split)))
-	  (message nil)
-	  (unless (dictionary-check-reply reply 250)
-	    (error "Unknown server answer: %s" (dictionary-reply reply)))))))
+      (let ((coding-system nil))
+	(if (and (boundp 'coding-system-alist)
+		 (assoc "utf-8" coding-system-alist))
+	    (setq coding-system 'utf-8))
+	(let ((coding-system-for-read coding-system)
+	      (coding-system-for-write coding-system))
+	  (message "Opening connection to %s:%s" dictionary-server
+		   dictionary-port)
+	  (connection-close dictionary-connection)
+	  (setq dictionary-connection
+		(connection-open dictionary-server dictionary-port))
+	  (dictionary-check-initial-reply)
+	  (dictionary-send-command (concat "client " dictionary-identification))
+	  (let ((reply (dictionary-read-reply-and-split)))
+	    (message nil)
+	    (unless (dictionary-check-reply reply 250)
+	      (error "Unknown server answer: %s" 
+		     (dictionary-reply reply))))))))
+
 (defun dictionary-mode-p ()
   "Return non-nil if current buffer has dictionary-mode"
   (eq major-mode 'dictionary-mode))
@@ -309,7 +317,7 @@ This is a quick reference to this mode describing the default key bindings:
 ;; Dealing with closing the buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun dictionary-close ()
+(defun dictionary-close (&rest ignore)
   "Close the current dictionary buffer and its connection"
   (interactive)
   (if (eq major-mode 'dictionary-mode)
@@ -381,13 +389,12 @@ This function knows about the special meaning of quotes (\")"
   "Read an answer delimited by a . on a single line"
   (let ((answer (connection-read-to-point dictionary-connection))
 	(start 0))
-    (while (string-match "^\\." answer start)
-      (setq answer (replace-match "" t t answer))
-      (setq start (match-end 0)))
-    (setq start 0)
     (while (string-match "\r\n" answer start)
       (setq answer (replace-match "\n" t t answer))
       (setq start (1- (match-end 0))))
+    (setq start 0)
+    (if (string-match "\n\\.\n.*" answer start)
+      (setq answer (replace-match "" t t answer)))
     answer))
 
 (defun dictionary-check-reply (reply code)
@@ -442,13 +449,14 @@ This function knows about the special meaning of quotes (\")"
 
 (defun dictionary-new-search (args &optional all)
   "Save the current state and start a new search"
+  (interactive)
   (dictionary-store-positions)
-  (dictionary-ensure-buffer)
   (let ((word (car args))
 	(dictionary (cdr args)))
 
     (if all
 	(setq dictionary dictionary-default-dictionary))
+    (dictionary-ensure-buffer)
     (dictionary-do-search word dictionary)
     (dictionary-store-state 'dictionary-do-search (list word dictionary))))
 
@@ -485,13 +493,20 @@ This function knows about the special meaning of quotes (\")"
 			  'dictionary-button-face 
 			  'dictionary-search nil
 			  "Mouse-2 to look up a new word")
-
 	(insert "         ")
+
 	(link-insert-link "[Matching words]"
 			  'dictionary-button-face
 			  'dictionary-match-words nil
 			  "Mouse-2 to find matches for a pattern")
+	(insert "        ")
+
+	(link-insert-link "[Quit]" 'dictionary-button-face 
+			  'dictionary-close nil
+			  "Mouse-2 to close this window")
+
 	(insert "\n       ")
+
 	(link-insert-link "[Select Default Dictionary]"
 			  'dictionary-button-face
 			  'dictionary-select-dictionary nil
@@ -540,6 +555,7 @@ This function knows about the special meaning of quotes (\")"
   "Insert the definition for the current word"
   (let ((start (point)))
     (insert reply)
+    (insert "\n\n")
     (let ((regexp "\\({+\\)\\([^ '\"][^}]*\\)\\(}+\\)"))
       (goto-char start)
       (while (< (point) (point-max))
@@ -726,12 +742,14 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   (dictionary-ensure-buffer)
   (dictionary-store-positions)
   (dictionary-do-matching word dictionary-default-dictionary
-			  dictionary-default-strategy)
+			  dictionary-default-strategy
+			  'dictionary-display-match-result)
   (dictionary-store-state 'dictionary-do-matching 
 			  (list word dictionary-default-dictionary
-				dictionary-default-strategy)))
+				dictionary-default-strategy 
+				'dictionary-display-match-result)))
 
-(defun dictionary-do-matching (word dictionary strategy)
+(defun dictionary-do-matching (word dictionary strategy function)
   "Ask the server about matches to `word' and display it."
   
   (message "Lookup matching words for %s in %s using %s"
@@ -752,7 +770,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 	       word strategy dictionary))
     (unless (dictionary-check-reply reply 152)
       (error "Unknown server answer: %s" (dictionary-reply reply)))
-    (dictionary-display-match-result reply)))
+    (funcall function reply)))
 
 (defun dictionary-display-match-result (reply)
   "Display the results from the current matches."
@@ -859,4 +877,52 @@ It presents the word at point as default input and allows editing it."
       (setq pattern (read-string "Search pattern: ")))
   (dictionary-new-matching pattern))
 
+;;;###autoload
+(defun dictionary-mouse-popup-matching-words (event)
+  "Display entries matching the word at the cursor"
+  (interactive "@e")
+  (let ((word (save-excursion
+		(mouse-set-point event)
+		(current-word))))
+    (dictionary-popup-matching-words word)))
+
+;;;###autoload
+(defun dictionary-popup-matching-words (&optional word)
+  "Display entries matching the word at the point"
+  (interactive)
+  ;; this is important, otherwise the utf-8 is too late
+  ;;  (save-window-excursion
+  ;;    (dictionary-ensure-buffer))
+  (unless (functionp 'popup-menu)
+    (error "Sorry, popup menus are not available in this emacs version"))
+  (dictionary-do-matching (or word (current-word))
+			  dictionary-default-dictionary
+			  "exact"
+			  'dictionary-process-popup-replies))
+
+(defun dictionary-process-popup-replies (reply)
+  (let ((number (nth 1 (dictionary-reply-list reply)))
+	(list (dictionary-simple-split-string (dictionary-read-answer) "\n+")))
+
+    (let ((result (mapcar (lambda (item)
+			    (let* ((list (dictionary-split-string item))
+				   (dictionary (car list))
+				   (word (cadr list)))
+			      (if (equal word "")
+				  [ "-" nil nil]
+				(vector (concat "[" dictionary "] " word)
+					`(dictionary-new-search 
+					  '(,word . ,dictionary))
+					t ))))
+				
+			  list)))
+      (let ((menu (make-sparse-keymap 'dictionary-popup)))
+	
+	(easy-menu-define dictionary-mode-map-menu dictionary-mode-map
+	  "Menu used for displaying dictionary popup"
+	  (cons "Matching words"
+		`(,@result)))
+	(popup-menu dictionary-mode-map-menu)))))
+  
 (provide 'dictionary)
+

@@ -6,4 +6,8 @@
   "Unconditionally lookup the word at point." t)
 (autoload 'dictionary "dictionary"
   "Create a new dictionary buffer" t)
+(autoload 'dictionary-mouse-popup-matching-words "dictionary"
+  "Display entries matching the word at the cursor" t)
+(autoload 'dictionary-popup-matching-words "dictionary"
+  "Display entries matching the word at the point" t)
 
