@@ -59,7 +59,7 @@
    custom.el  file  in  the above GNU Emacs. Please update to the current
    version  whenever possible. XEmacs 21 and Emacs 20 as well as Emacs 21
    have been tested too.
-     * Current version (1.7) of this package
+     * Current version (1.7.1) of this package
      * Version 1.5.1 of this package
      * Version 1.4.1 of this package
      * Version 1.3.3 of this package
@@ -80,14 +80,14 @@
                              Unpacking the archive
 
    The package is distributed as tar.gz file. You unpack it using:
-gzip -dc dictionary-1.7.tar.gz | tar xf -
+gzip -dc dictionary-1.7.1.tar.gz | tar xf -
 
    or
-tar -xzf dictionary-1.7.tar.gz
+tar -xzf dictionary-1.7.1.tar.gz
 
    (with  the  version number subject to change) depending on whether you
    are  using  GNU  tar  which  support the z flag for compression. After
-   unpacking  the  archive  a  directory  dictionary-1.7 has been created
+   unpacking  the  archive  a directory dictionary-1.7.1 has been created
    containing the necessary files.
 
                                  Installation
@@ -99,12 +99,12 @@ Debian
    dpkg-buildpackage) you can use the supplied debian support.
 make debian
 
-   This will create a package named dictionary-1.7-1_i386.deb or similiar
-   in  the  parent  directory of dictionary-1.7. You can now install this
-   package  as  root,  it  will automatically byte-compile itself for all
-   installed  emacs  versions  and provide a startup-file which autoloads
-   this  package.  In  the configuration example given below you can omit
-   the autoload lines.
+   This  will  create  a  package  named  dictionary-1.7.1-1_i386.deb  or
+   similiar  in  the  parent  directory  of dictionary-1.7.1. You can now
+   install  this  package  as  root,  it  will automatically byte-compile
+   itself  for  all  installed  emacs versions and provide a startup-file
+   which autoloads this package. In the configuration example given below
+   you can omit the autoload lines.
 
    If you no longer want to use this package, you can remove it using:
 dpkg -r dictionary
@@ -468,8 +468,8 @@ Support for different encodings in dictionaries
 
    I  want  to thank Sam Steingold, Baoqiu Cui, Bruce Ravel, Pavel Janík,
    Sergei  Pokrovsky,  Jeff  Mincy,  Serge  Boiko,  Enrico Scholz, Reuben
-   Thomas,  Rui  Zhu,  and  Eugene Morozov for their valuable suggestions
-   (including patches) for improving this package.
+   Thomas,  Rui  Zhu, Eugene Morozov, and Robert Pluim for their valuable
+   suggestions (including patches) for improving this package.
 
                                     License
 
@@ -487,6 +487,11 @@ Support for different encodings in dictionaries
    version 2 along with this package; see the file GPL.
 
                                   ChangeLogs
+
+Version 1.7 - 1.7.1
+
+     * fixed  mule-detection in dictionary-coding-system (patch submitted
+       by Robert Pluim)
 
 Version 1.5.1 - 1.7
 
@@ -578,5 +583,4 @@ Version 1.0 - 1.1
      _________________________________________________________________
 
    E-Mail: dictionary@myrkr.in-berlin.de
-   Last modified: Sun Dec 9 21:07:51 CET 2001
-
+   Last modified: Sat Dec 15 14:34:54 CET 2001

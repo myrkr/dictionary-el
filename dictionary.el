@@ -2,7 +2,7 @@
 
  ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
  ;; Keywords: interface, dictionary
- ;; $Id: dictionary.el,v 1.30 2001/12/09 14:40:04 torsten Exp $
+ ;; $Id: dictionary.el,v 1.32 2001/12/15 13:37:10 torsten Exp $
 
  ;; This file is free software; you can redistribute it and/or modify
  ;; it under the terms of the GNU General Public License as published by
@@ -488,16 +488,15 @@ This function knows about the special meaning of quotes (\")"
 
 (defun dictionary-coding-system (dictionary)
   "Select coding system to use for that dictionary"
-  (unless (boundp 'dictionary-coding-systems-for-dictionaries)
-    nil)
-  (let ((coding-system
-	 (or (cdr (assoc dictionary
-			 dictionary-coding-systems-for-dictionaries))
-	     'utf-8)))
-    (if (member coding-system (coding-system-list))
-	coding-system
-      nil)))
-    
+  (when (boundp 'dictionary-coding-systems-for-dictionaries)
+    (let ((coding-system
+           (or (cdr (assoc dictionary
+                           dictionary-coding-systems-for-dictionaries))
+               'utf-8)))
+      (if (member coding-system (coding-system-list))
+          coding-system
+        nil))))
+
 (defun dictionary-decode-charset (text dictionary)
   "Convert the text from the charset defined by the dictionary given."
   (let ((coding-system (dictionary-coding-system dictionary)))

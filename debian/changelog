@@ -1,9 +1,16 @@
+dictionary (1.7.1-1) unstable; urgency=low
+
+  * Fixed bug in dictionary-coding-system, the detection of non-mule
+    Emacsen was not correct
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Sat, 15 Dec 2001 14:29:29 +0100
+
 dictionary (1.7-1) unstable; urgency=low
 
   * Added first support for dictionaries with different encodings than
     utf-8.
 
- -- Torsten Hilbrich <email@myrkr.in-berlin.de>  Sun,  9 Dec 2001 14:21:57 +0100
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Sun,  9 Dec 2001 14:21:57 +0100
 
 dictionary (1.6-1) unstable; urgency=low
 
