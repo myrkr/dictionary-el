@@ -1,3 +1,9 @@
+dictionary (1.5-1) unstable; urgency=low
+
+  * added tooltip support for emacs
+
+ -- Torsten Hilbrich <Torsten.Hilbrich@gmx.net>  Sun,  8 Jul 2001 21:01:12 +0200
+
 dictionary (1.4.1-1) unstable; urgency=low
 
   * changed recognition of utf-8 support (suggested by Enrico Scholz)

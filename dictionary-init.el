@@ -10,4 +10,8 @@
   "Display entries matching the word at the cursor" t)
 (autoload 'dictionary-popup-matching-words "dictionary"
   "Display entries matching the word at the point" t)
+(autoload 'dictionary-tooltip-mode "dictionary"
+  "Display tooltips for the current word" t)
+(autoload 'global-dictionary-tooltip-mode "dictionary"
+  "Enable/disable dictionary-tooltip-mode for all buffers" t)
 

@@ -26,8 +26,12 @@
        recognized as hyper links and browseable
      * easy selection of dictionary and search strategy
      * backward moving through the visited definitions
+     * in the latest versions of GNU Emacs and XEmacs you get support for
+       popup menus
+     * in GNU Emacs 21 you can lookup words by simply pointing the mouse
+       cursor to them (tool-tips)
        
-   Here are two ample screenshot showing the dictionary mode in action
+   Here are three sample screenshot showing the dictionary mode in action
    within an Emacs 21 buffer:
    
    This buffer shows the result of searching the definition for Emacs.
@@ -39,6 +43,12 @@
    possible. You can now select one of the found entries or ignore the
    search by pressing any mouse button outside the menu.
    
+   This screenshot shows the tool-tips supported in GNU Emacs 21.
+   Whenever the mouse cursor stands still for a certain time (about one
+   second) the word at cursor is looked up in the configured dictionary.
+   This example shows the german translation for originally, in this
+   context not the right one, ursprünglich would be better.
+   
                            Download and Requirements
                                        
    I have tested the package with a native GNU Emacs 19.34.1 and XEmacs
@@ -46,18 +56,19 @@
    custom.el file in the above GNU Emacs. Please update to the current
    version whenever possible. XEmacs 21 and Emacs 20 as well as Emacs 21
    have been tested too.
-     * [5]Current version (1.4.1) of this package
-     * [6]Version 1.3.3 of this package
-     * [7]Version 1.2.1 of this package
-     * [8]Version 1.1 of this package
-     * [9]Initial version (1.0) of this package
+     * [5]Current version (1.5) of this package
+     * [6]Version 1.4.1 of this package
+     * [7]Version 1.3.3 of this package
+     * [8]Version 1.2.1 of this package
+     * [9]Version 1.1 of this package
+     * [10]Initial version (1.0) of this package
        
    I you want to know more about the differences please look at the
-   [10]ChangeLog.
+   [11]ChangeLog.
    
    You will need the custom package to use this package. For full support
    please check if your system knows the defface function, if not please
-   download the [11]current version.
+   download the [12]current version.
    
    For best usability I suggest using the mouse, but it provide good
    keyboard support as well.
@@ -65,14 +76,14 @@
                              Unpacking the archive
                                        
    The package is distributed as tar.gz file. You unpack it using:
-gzip -dc dictionary-1.4.1.tar.gz | tar xf -
+gzip -dc dictionary-1.5.tar.gz | tar xf -
 
    or
-tar -xzf dictionary-1.4.1.tar.gz
+tar -xzf dictionary-1.5.tar.gz
 
    (with the version number subject to change) depending on whether you
    are using GNU tar which support the z flag for compression. After
-   unpacking the archive a directory dictionary-1.4.1 has been created
+   unpacking the archive a directory dictionary-1.5 has been created
    containing the necessary files.
    
                                  Installation
@@ -84,12 +95,12 @@ Debian
    dpkg-buildpackage) you can use the supplied debian support.
 make debian
 
-   This will create a package named dictionary-1.4.1-1_i386.deb or
-   similiar in the parent directory of dictionary-1.4.1. You can now
-   install this package as root, it will automatically byte-compile
-   itself for all installed emacs versions and provide a startup-file
-   which autoloads this package. In the configuration example given below
-   you can omit the autoload lines.
+   This will create a package named dictionary-1.5-1_i386.deb or similiar
+   in the parent directory of dictionary-1.5. You can now install this
+   package as root, it will automatically byte-compile itself for all
+   installed emacs versions and provide a startup-file which autoloads
+   this package. In the configuration example given below you can omit
+   the autoload lines.
    
    If you no longer want to use this package, you can remove it using:
 dpkg -r dictionary
@@ -100,7 +111,7 @@ XEmacs 21
    packages are also supported, you can create them using:
 make EMACS=xemacs package
 
-   The created package will be named dictionary-1.3-pkg.tar.gz and stored
+   The created package will be named dictionary-1.5-pkg.tar.gz and stored
    within the current directory. If you don't want to install this
    package manually, you can use the following command, provided you have
    sufficient privileges (if unsure, login as super user):
@@ -145,14 +156,16 @@ Manually
   "Display entries matching the word at the cursor" t)
 (autoload 'dictionary-popup-matching-words "dictionary"
   "Display entries matching the word at the point" t)
+(autoload 'dictionary-tooltip-mode "dictionary"
+  "Display tooltips for the current word" t)
+(autoload 'global-dictionary-tooltip-mode "dictionary"
+  "Enable/disable dictionary-tooltip-mode for all buffers" t)
 
    In addition, some key bindings for faster access can be useful. I use
    the following ones in my installation:
+;; key bindings
 (global-set-key [(control c) ?s] 'dictionary-search)
 (global-set-key [(control c) ?m] 'dictionary-match-words)
-(if (boundp 'running-xemacs)
-    (global-set-key [(control button3)] 'dictionary-mouse-popup-matching-words)
-   (global-set-key [mouse-3] 'dictionary-mouse-popup-matching-words))
 
    I will describe the user-callable functions and the key bindings
    within dictionary mode later in this document.
@@ -215,16 +228,42 @@ Invoking
    
    You can also display a popup menu showing the definition for a certain
    word. You just place the mouse cursor above the word you want to
-   lookup and press the assigned mouse button. The above sample keyboard
-   definition binds this command to the right mouse button in GNU Emacs
-   and to ctrl + right mouse button in XEmacs. For mouse invocation use
-   dictionary-mouse-popup-matching-words, for assigning to a key
-   combination use the dictionary-popup-matching-words function. The
-   latter function search for the word located at point.
+   lookup and press the assigned mouse button. The sample definition in
+   section [13]Customizing binds this command to the right mouse button
+   in GNU Emacs and to ctrl + right mouse button in XEmacs. For mouse
+   invocation use dictionary-mouse-popup-matching-words, for assigning to
+   a key combination use the dictionary-popup-matching-words function.
+   The latter function search for the word located at point.
    
    I have tested this feature in Emacs 21 and XEmacs 21. Emacs 20 do not
    support this kind of popup menus (you will get an error message if you
    try anyway), XEmacs 20 or prior has not been tested yet.
+   
+   A new feature of version 1.5 is the tool-tip support. This will only
+   work in GNU Emacs 21, XEmacs uses a different mechanism (called
+   balloon help) which can not easily be adapted. Please note, the
+   tool-tip mode may slow down your Emacs, especially if you prefer using
+   the mouse.
+   
+   First you have to define the dictionary for looking up words to
+   display in the tool-tip window. You could use * to search in all
+   dictionaries, however tool-tip window should be rather small. I use an
+   english to german dictionary for myself, which is called eng-deu (you
+   can find out the name if you look into contents of the square brackets
+   within the dictionary buffer; for example, the line From WordNet (r)
+   1.6[wn]: tells you the name of this dictionary is wn).
+(setq dictionary-tooltip-dictionary "eng-deu")
+
+   Next you have to decide if you want tool-tip support in the current
+   buffer only or in all buffers. For the first use the
+   dictionary-tooltip-mode command, for the latter
+   global-dictionary-tooltip-mode.
+;; choose on of the following lines
+(global-dictionary-tooltip-mode 1)
+(dictionary-tooltip-mode 1)
+
+   To turn the tool-tip support off, call these functions with a numeric
+   argument of 0.
    
    If you get an error message that the server could not be contacted,
    please check the values of the variables dictionary-server and
@@ -361,10 +400,21 @@ Getting Help
    Of course you can set all the variables and hooks you want in the
    startup file. Here is a little example that I use for selecting the
    server on my local machine and for binding some function to the
-   user-reserved keys starting from C-c a to C-c z.
+   user-reserved keys starting from C-c a to C-c z. It also shows how to
+   invoke popup menus (using the right button in GNU Emacs or ctrl+right
+   button in XEmacs) and installs the global tooltip-mode.
 (global-set-key [(control c) ?s] 'dictionary-search)
 (global-set-key [(control c) ?m] 'dictionary-match-words)
 (setq dictionary-server "localhost")
+
+;; Popup menu for GNU Emacs 21, and XEmacs 21
+(if (boundp 'running-xemacs)
+    (global-set-key [(control button3)] 'dictionary-mouse-popup-matching-words)
+   (global-set-key [mouse-3] 'dictionary-mouse-popup-matching-words))
+
+;; Tool-tip support for GNU Emacs 21
+(setq dictionary-tooltip-dictionary "eng-deu")
+(global-dictionary-tooltip-mode 1)
 
                                     Thanks
                                        
@@ -390,6 +440,10 @@ Getting Help
    
                                   ChangeLogs
                                        
+Version 1.4.1 - 1.5
+
+     * tool-tip support for GNU Emacs 21
+       
 Version 1.4 - 1.4.1
 
      * changed recognition of utf-8 support (suggested by Enrico Scholz)
@@ -465,9 +519,9 @@ Version 1.0 - 1.1
      _________________________________________________________________
    
    
-    [12]Torsten Hilbrich
+    [14]Torsten Hilbrich
     
-   Last modified: Fri Jul 6 23:24:01 CEST 2001
+   Last modified: Sun Jul 8 21:53:36 CEST 2001
 
 References
 
@@ -476,15 +530,18 @@ References
    2. http://www.dict.org/rfc2229.txt
    3. http://www.xemacs.org/
    4. http://www.myrkr.in-berlin.de/dictionary.html
-   5. http://localhost/~torsten/dictionary-1.4.1.tar.gz
-   6. http://localhost/~torsten/dictionary-1.3.3.tar.gz
-   7. http://localhost/~torsten/dictionary-1.2.1.tar.gz
-   8. http://localhost/~torsten/dictionary-1.1.tar.gz
-   9. http://localhost/~torsten/dictionary-1.0.tar.gz
-  10. http://localhost/~torsten/dictionary.html#changelog
-  11. http://www.dina.kvl.dk/~abraham/custom/
-  12. mailto:Torsten.Hilbrich@gmx.net
+   5. http://localhost/~torsten/dictionary-1.5.tar.gz
+   6. http://localhost/~torsten/dictionary-1.4.1.tar.gz
+   7. http://localhost/~torsten/dictionary-1.3.3.tar.gz
+   8. http://localhost/~torsten/dictionary-1.2.1.tar.gz
+   9. http://localhost/~torsten/dictionary-1.1.tar.gz
+  10. http://localhost/~torsten/dictionary-1.0.tar.gz
+  11. http://localhost/~torsten/dictionary.html#changelog
+  12. http://www.dina.kvl.dk/~abraham/custom/
+  13. http://localhost/~torsten/dictionary.html#Customizing
+  14. mailto:Torsten.Hilbrich@gmx.net
 
    Hidden links:
-  13. http://localhost/~torsten/dictionary-1.png
-  14. http://localhost/~torsten/dictionary-2.png
+  15. http://localhost/~torsten/dictionary-1.png
+  16. http://localhost/~torsten/dictionary-2.png
+  17. http://localhost/~torsten/dictionary-3.png

@@ -1,8 +1,8 @@
-;; dictionary.el -- an interface to RFC 2229 dictionary server
+; dictionary.el -- an interface to RFC 2229 dictionary server
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.22 2001/07/06 20:50:18 torsten Exp $
+;; $Id: dictionary.el,v 1.24 2001/07/08 19:06:50 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -234,9 +234,9 @@ This is a quick reference to this mode describing the default key bindings:
   "Create a new dictonary buffer and install dictionary-mode"
   (interactive)
   (let ((coding-system nil))
-    (if (and (boundp 'coding-system-alist)
-             (assoc "utf-8" coding-system-alist))
-        (setq coding-system 'utf-8))
+    (if (and (functionp 'coding-system-list)
+	     (member 'utf-8 (coding-system-list)))
+ 	(setq coding-system 'utf-8))
     (let ((coding-system-for-read coding-system)
           (coding-system-for-write coding-system))
       (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
@@ -286,8 +286,8 @@ This is a quick reference to this mode describing the default key bindings:
   (if (not (and dictionary-connection
 		(eq (connection-status dictionary-connection) 'up)))
       (let ((coding-system nil))
-	(if (and (boundp 'coding-system-alist)
-		 (assoc "utf-8" coding-system-alist))
+	(if (and (functionp 'coding-system-list)
+		 (member 'utf-8 (coding-system-list)))
 	    (setq coding-system 'utf-8))
 	(let ((coding-system-for-read coding-system)
 	      (coding-system-for-write coding-system))
@@ -457,17 +457,17 @@ This function knows about the special meaning of quotes (\")"
     (if all
 	(setq dictionary dictionary-default-dictionary))
     (dictionary-ensure-buffer)
-    (dictionary-do-search word dictionary)
+    (dictionary-pre-buffer)
+    (dictionary-do-search word dictionary 'dictionary-display-search-result)
     (dictionary-store-state 'dictionary-do-search (list word dictionary))))
 
-(defun dictionary-do-search (word dictionary)
+(defun dictionary-do-search (word dictionary function)
   "The workhorse for doing the search"
 
   (message "Searching for %s in %s" word dictionary)
   (dictionary-send-command (concat "define \"" dictionary "\" \""
 				   word "\""))
   (message nil)
-  (dictionary-pre-buffer)
   (let ((reply (dictionary-read-reply-and-split)))
     (if (dictionary-check-reply reply 552)
 	(error "Word \"%s\" in dictionary \"%s\" not found"
@@ -477,7 +477,7 @@ This function knows about the special meaning of quotes (\")"
 		 dictionary)
 	(unless (dictionary-check-reply reply 150)
 	  (error "Unknown server answer: %s" (dictionary-reply reply)))
-	(dictionary-display-search-result reply)))))
+	(funcall function reply)))))
 
 (defun dictionary-pre-buffer ()
   "These commands are executed at the begin of a new buffer"
@@ -881,18 +881,16 @@ It presents the word at point as default input and allows editing it."
 (defun dictionary-mouse-popup-matching-words (event)
   "Display entries matching the word at the cursor"
   (interactive "@e")
-  (let ((word (save-excursion
-		(mouse-set-point event)
-		(current-word))))
+  (let ((word (save-window-excursion
+		(save-excursion
+		  (mouse-set-point event)
+		  (current-word)))))
     (dictionary-popup-matching-words word)))
 
 ;;;###autoload
 (defun dictionary-popup-matching-words (&optional word)
   "Display entries matching the word at the point"
   (interactive)
-  ;; this is important, otherwise the utf-8 is too late
-  ;;  (save-window-excursion
-  ;;    (dictionary-ensure-buffer))
   (unless (functionp 'popup-menu)
     (error "Sorry, popup menus are not available in this emacs version"))
   (dictionary-do-matching (or word (current-word))
@@ -923,6 +921,66 @@ It presents the word at point as default input and allows editing it."
 	  (cons "Matching words"
 		`(,@result)))
 	(popup-menu dictionary-mode-map-menu)))))
+
+;;; Tooltip support
+
+(defun dictionary-definition (word &optional dictionary)
+  (interactive)
+  (unwind-protect
+      (let ((dictionary (or dictionary dictionary-default-dictionary)))
+	(dictionary-do-search word dictionary 'dictionary-read-definition))
+    nil))
   
+(defun dictionary-read-definition (reply)
+  (let ((list (dictionary-simple-split-string (dictionary-read-answer) "\n+")))
+    (mapconcat 'identity (cdr list) "\n")))
+
+(defcustom dictionary-tooltip-dictionary
+  nil
+  "This dictionary to lookup words for tooltips"
+  :group 'dictionary
+  :type 'string)
+
+(defun dictionary-display-tooltip (event)
+  "Search the current word in the `dictionary-tooltip-dictionary'."
+  (if dictionary-tooltip-dictionary
+      (let ((word (save-window-excursion
+		    (save-excursion
+		      (mouse-set-point event)
+		      (current-word)))))
+	(let ((definition 
+		(dictionary-definition word 
+				       dictionary-tooltip-dictionary)))
+	  (if definition 
+	      (tooltip-show definition))
+	  t))
+    nil))
+
+(defvar dictionary-tooltip-mode
+  nil)
+
+;;;###autoload
+(defun dictionary-tooltip-mode (&optional arg)
+  "Display tooltips for the current word"
+  (interactive "P")
+  (require 'tooltip)
+  (let* ((on (if arg
+		 (> (prefix-numeric-value arg) 0)
+	       (not dictionary-tooltip-mode)))
+	 (hook-fn (if on 'add-hook 'remove-hook)))
+    (tooltip-mode on)
+    (funcall hook-fn 'tooltip-hook 'dictionary-display-tooltip)
+    (tooltip-activate-mouse-motions on)))
+
+;;;###autoload
+(defun global-dictionary-tooltip-mode (&optional arg)
+  "Enable/disable dictionary-tooltip-mode for all buffers"
+  (interactive "P")
+  (let ((on (if arg (> (prefix-numeric-value arg) 0)
+	      (not dictionary-tooltip-mode))))
+    (dictionary-tooltip-mode on)
+    (tooltip-activate-mouse-motions on)
+    (setq-default track-mouse on)))
+
 (provide 'dictionary)
 

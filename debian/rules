@@ -29,9 +29,9 @@ binary-arch: checkroot build
 
 	cp dictionary.el connection.el link.el dictionary-init.el \
 		debian/tmp/usr/share/emacs/site-lisp
-	cp install.debian debian/tmp/usr/lib/emacsen-common/packages/install/dictionary
+	cp debian/install.debian debian/tmp/usr/lib/emacsen-common/packages/install/dictionary
 	chmod 755 debian/tmp/usr/lib/emacsen-common/packages/install/dictionary
-	cp remove.debian debian/tmp/usr/lib/emacsen-common/packages/remove/dictionary
+	cp debian/remove.debian debian/tmp/usr/lib/emacsen-common/packages/remove/dictionary
 	chmod 755 debian/tmp/usr/lib/emacsen-common/packages/remove/dictionary
 	
 	debstd README 

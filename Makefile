@@ -1,6 +1,6 @@
 EMACS=emacs
 
-VERSION=1.4
+VERSION=1.5
 PACKAGE=dictionary
 TYPE=comm
 XEMACS-PACKAGE=$(PACKAGE)-$(VERSION)-pkg.tar.gz
