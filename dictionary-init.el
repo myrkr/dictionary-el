@@ -1,4 +1,4 @@
-;; $Id: dictionary-init.el,v 1.6 2002/10/12 09:35:58 torsten Exp $
+;; $Id: dictionary-init.el,v 1.7 2003/06/21 17:55:15 torsten Exp $
 ;; This file contains the autoload definitions that are used by the
 ;; debian package and can also be used in a standalone installation
 ;; The XEmacs package has some other means to create the autoload
@@ -18,6 +18,7 @@
   "Display entries matching the word at the point" t)
 (autoload 'dictionary-tooltip-mode "dictionary"
   "Display tooltips for the current word" t)
-(autoload 'global-dictionary-tooltip-mode "dictionary"
-  "Enable/disable dictionary-tooltip-mode for all buffers" t)
+(unless (boundp 'running-xemacs)
+  (autoload 'global-dictionary-tooltip-mode "dictionary"
+    "Enable/disable dictionary-tooltip-mode for all buffers" t))
 
