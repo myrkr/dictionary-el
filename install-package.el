@@ -1,0 +1,7 @@
+(defun install-package ()
+  (interactive)
+  (let ((filename (apply 'concat command-line-args-left)))
+    (message (concat "Installing package " filename))
+    (package-admin-add-binary-package filename)
+    (set-buffer "*Package Output*")
+    (message (buffer-substring (point-min) (point-max)))))
