@@ -1,3 +1,9 @@
+dictionary (1.4.1-1) unstable; urgency=low
+
+  * changed recognition of utf-8 support (suggested by Enrico Scholz)
+
+ -- Torsten Hilbrich <Torsten.Hilbrich@gmx.net>  Fri,  6 Jul 2001 23:08:48 +0200
+
 dictionary (1.4-1) unstable; urgency=low
 
   * support for popup menus
