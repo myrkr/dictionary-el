@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: network
-;; $Id: connection.el,v 1.7 2001/04/26 16:56:21 torsten Exp $
+;; $Id: connection.el,v 1.7 2001/04/26 16:56:21 torsten Exp torsten $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
 
 ;; Author: Torsten Hilbrich <Torsten.Hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; $Id: dictionary.el,v 1.17 2001/04/26 16:57:32 torsten Exp $
+;; $Id: dictionary.el,v 1.18 2001/05/13 07:46:37 torsten Exp torsten $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -230,20 +230,23 @@ This is a quick reference to this mode describing the default key bindings:
 (defun dictionary ()
   "Create a new dictonary buffer and install dictionary-mode"
   (interactive)
+  (let ((coding-system nil))
+    (if (and (boundp 'coding-system-alist)
+	     (assoc "utf-8" coding-system-alist))
+	(setq coding-system 'utf-8))
+    (let ((coding-system-for-read coding-system)
+	  (coding-system-for-write coding-system))
+      (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
+	    (window-configuration (current-window-configuration)))
 
-  (let ((coding-system-for-read 'utf-8)
-	(coding-system-for-write 'utf-8))
-    (let ((buffer (generate-new-buffer "*Dictionary buffer*"))
-	  (window-configuration (current-window-configuration)))
+	(switch-to-buffer-other-window buffer)
+	(dictionary-mode)
 
-    (switch-to-buffer-other-window buffer)
-    (dictionary-mode)
-    
-    (make-local-variable 'dictionary-window-configuration)
-    (setq dictionary-window-configuration window-configuration)
-    (dictionary-check-connection)
-    (dictionary-pre-buffer)
-    (dictionary-post-buffer))))
+	(make-local-variable 'dictionary-window-configuration)
+	(setq dictionary-window-configuration window-configuration)
+	(dictionary-check-connection)
+	(dictionary-pre-buffer)
+	(dictionary-post-buffer)))))
 
 (unless dictionary-mode-map
   (setq dictionary-mode-map (make-sparse-keymap))
