@@ -413,6 +413,8 @@ by the choice value:
 		    (connection-open dictionary-proxy-server 
 				     dictionary-proxy-port)
 		  (connection-open dictionary-server dictionary-port)))
+	  (process-kill-without-query
+	   (connection-process dictionary-connection))
 	  
 	  (when dictionary-use-http-proxy
 	    (message "Proxy CONNECT to %s:%d" 
