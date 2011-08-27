@@ -638,7 +638,9 @@ This function knows about the special meaning of quotes (\")"
   "The workhorse for doing the search"
   
   (message "Searching for %s in %s" word dictionary)
-  (dictionary-send-command (concat "define " dictionary " \""
+  (dictionary-send-command (concat "define "
+				   (dictionary-encode-charset dictionary "")
+				   " \""
 				   (dictionary-encode-charset word dictionary)
 				   "\""))
   
@@ -862,7 +864,8 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 		(equal dictionary "!"))
       (dictionary-store-positions)
       (message "Requesting more information on %s" dictionary)
-      (dictionary-send-command (concat "show info " dictionary))
+      (dictionary-send-command
+       (concat "show info " (dictionary-encode-charset dictionary "")))
       (let ((reply (dictionary-read-reply-and-split)))
 	(message nil)
 	(if (dictionary-check-reply reply 550)
@@ -951,8 +954,9 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   (message "Lookup matching words for %s in %s using %s"
 	   word dictionary strategy)
   (dictionary-send-command 
-   (concat "match " dictionary " "
-	   strategy " \"" (dictionary-encode-charset word "") "\""))
+   (concat "match " (dictionary-encode-charset dictionary "") " "
+	   (dictionary-encode-charset strategy "") " \""
+	   (dictionary-encode-charset word "") "\""))
   (let ((reply (dictionary-read-reply-and-split)))
     (message nil)
     (if (dictionary-check-reply reply 550)
