@@ -1045,9 +1045,16 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   "Search the `word' in `dictionary' if given or in all if nil.  
 It presents the word at point as default input and allows editing it."
   (interactive
-   (list (read-string "Search word: " (current-word))
+   (list (let ((default (current-word t)))
+           (read-string (if default
+                            (format "Search word (%s): " default)
+                          "Search word: ")
+                        nil nil default))
 	 (if current-prefix-arg
-	     (read-string "Dictionary: " dictionary-default-dictionary)
+	     (read-string (if dictionary-default-dictionary
+			      (format "Dictionary (%s): " dictionary-default-dictionary)
+			    "Dictionary: ")
+			  nil nil dictionary-default-dictionary)
 	   dictionary-default-dictionary)))
   
   ;; if called by pressing the button
