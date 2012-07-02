@@ -59,7 +59,7 @@
    custom.el  file  in  the above GNU Emacs. Please update to the current
    version  whenever possible. XEmacs 21 and Emacs 20 as well as Emacs 21
    have been tested too.
-     * Current version (1.7.2) of this package
+     * Current version (1.9) of this package
      * Version 1.5.1 of this package
      * Version 1.4.1 of this package
      * Version 1.3.3 of this package
@@ -80,14 +80,14 @@
                              Unpacking the archive
 
    The package is distributed as tar.gz file. You unpack it using:
-gzip -dc dictionary-1.7.2.tar.gz | tar xf -
+gzip -dc dictionary-1.9.tar.gz | tar xf -
 
    or
-tar -xzf dictionary-1.7.2.tar.gz
+tar -xzf dictionary-1.9.tar.gz
 
    (with  the  version number subject to change) depending on whether you
    are  using  GNU  tar  which  support the z flag for compression. After
-   unpacking  the  archive  a directory dictionary-1.7.2 has been created
+   unpacking  the  archive  a directory dictionary-1.9 has been created
    containing the necessary files.
 
                                  Installation
@@ -99,8 +99,8 @@ Debian
    dpkg-buildpackage) you can use the supplied debian support.
 make debian
 
-   This  will  create  a  package  named  dictionary-1.7.2-1_i386.deb  or
-   similiar  in  the  parent  directory  of dictionary-1.7.2. You can now
+   This  will  create  a  package  named  dictionary-1.9-1_i386.deb  or
+   similiar  in  the  parent  directory  of dictionary-1.9. You can now
    install  this  package  as  root,  it  will automatically byte-compile
    itself  for  all  installed  emacs versions and provide a startup-file
    which autoloads this package. In the configuration example given below
@@ -487,6 +487,58 @@ Support for different encodings in dictionaries
    version 2 along with this package; see the file GPL.
 
                                   ChangeLogs
+
+Version 1.8.7 - 1.9
+
+     * Include some fixes for Emacs24 based on debian version.
+
+Version 1.8.6 - 1.8.7
+
+     * fixed decoding problem when selecting dictionary (problem reported by
+       Kuno Strassmann)
+
+Version 1.8.5 - 1.8.6
+
+     * added patch fixing the wrong display of dictionary description
+       (provided by Sergei Pokrovsky)
+     * added dictionary-description-open-delimiter and
+       dictionary-description-close-delimiter (suggested by Sergei Pokrovsky)
+
+Version 1.8.4 - 1.8.5
+
+     * added variable dictionary-use-single-buffer to allow selecting
+       between single/multiple buffers for dictionary access
+     * added tooltip support for XEmacs based on balloon-help
+
+Version 1.8 - 1.8.4
+
+     * fixed Makefile
+     * Fixed multiple defined function in dictionary.el
+     * install-pkg was missing in the last tarball
+
+Version 1.7.4 - 1.8
+
+     * added search for similiar words when the searched word is not found.
+
+Version 1.7.3 - 1.7.4
+
+     * dictionary.el (dictionary-do-matching): removed quotes around
+       dictionary name and match strategy
+
+     * dictionary.el (dictionary-do-search): removed quotes around dictionary
+       name
+
+     * dictionary.el (dictionary-display-more-info): removed quotes around
+       dictionary name
+
+     This problem (occurring with jdictd) was reported by E C Vijil
+
+
+Version 1.7.2 - 1.7.3
+
+     * dictionary.el (dictionary-default-popup-strategy): added this
+       variable and changed dictionary-popup-matching-words to use
+       this as matching strategy (suggested by Renaud Pons)
 
 Version 1.7.1 - 1.7.2
 

@@ -2,7 +2,7 @@
 
 EMACS=emacs
 
-VERSION=1.8
+VERSION=1.9
 PACKAGE=dictionary
 TYPE=comm
 XEMACS-PACKAGE=$(PACKAGE)-$(VERSION)-pkg.tar.gz
