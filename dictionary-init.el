@@ -21,3 +21,6 @@
   (autoload 'global-dictionary-tooltip-mode "dictionary"
     "Enable/disable dictionary-tooltip-mode for all buffers" t))
 
+;; Bypass custom-add-load to speed startup.
+(put 'dictionary       'custom-loads '(dictionary))
+(put 'dictionary-group 'custom-loads '(dictionary))

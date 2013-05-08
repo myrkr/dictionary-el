@@ -40,6 +40,15 @@
     (defmacro defcustom (var value doc &rest ignored)
       (list 'defvar var value doc))))
 
+(defun dictionary-set-server-var (name value)
+  (if (and (boundp 'dictionary-connection)
+	   dictionary-connection
+	   (eq (connection-status dictionary-connection) 'up)
+	   (y-or-n-p
+	    (concat "Close existing connection to " dictionary-server "? ")))
+      (connection-close dictionary-connection))
+  (set-default name value))
+
 (defgroup dictionary nil
   "Client for accessing the dictd server based dictionaries"
   :group 'hypermedia)
@@ -52,6 +61,7 @@
   "dict.org"
   "This server is contacted for searching the dictionary"
   :group 'dictionary
+  :set 'dictionary-set-server-var
   :type 'string)
 
 (defcustom dictionary-port
@@ -59,6 +69,7 @@
   "The port of the dictionary server.
  This port is propably always 2628 so there should be no need to modify it."
   :group 'dictionary
+  :set 'dictionary-set-server-var
   :type 'number)
 
 (defcustom dictionary-identification
@@ -134,18 +145,21 @@ by the choice value:
   nil
   "Connects via a HTTP proxy using the CONNECT command when not nil."
   :group 'dictionary-proxy
+  :set 'dictionary-set-server-var
   :type 'boolean)
 
 (defcustom dictionary-proxy-server
   "proxy"
   "The name of the HTTP proxy to use when dictionary-use-http-proxy is set."
   :group 'dictionary-proxy
+  :set 'dictionary-set-server-var
   :type 'string)
 
 (defcustom dictionary-proxy-port
   3128
   "The port of the proxy server, used only when dictionary-use-http-proxy is set."
   :group 'dictionary-proxy
+  :set 'dictionary-set-server-var
   :type 'number)
 
 (defcustom dictionary-use-single-buffer
@@ -836,7 +850,8 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 	 (description (cadr list))
 	 (translated (dictionary-decode-charset description dictionary)))
     (if dictionary
-	(progn
+	(if (equal dictionary "--exit--")
+	    (insert "(end of default search list)\n")
 	  (link-insert-link (concat dictionary ": " translated)
 			    'dictionary-reference-face
 			    'dictionary-set-dictionary 
