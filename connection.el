@@ -2,7 +2,6 @@
 
 ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: network
-;; $Id: connection.el,v 1.9 2002/10/12 09:30:32 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

@@ -1,5 +1,4 @@
-# -*- Makefile -*- $Id: Makefile,v 1.8 2002/10/12 09:54:09 torsten Exp $
-
+# -*- Makefile -*-
 EMACS=emacs
 
 VERSION=1.9

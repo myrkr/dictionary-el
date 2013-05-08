@@ -2,7 +2,6 @@
 
 ;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
 ;; Keywords: interface, hypermedia
-;; $Id: link.el,v 1.10 2002/10/12 09:40:09 torsten Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
