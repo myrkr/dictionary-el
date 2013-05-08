@@ -1,3 +1,10 @@
+dictionary (1.10-1) unstable; urgency=low
+
+  * Add some fixes sent by Reuben Thomas
+  * Fix link placement in dictionary-display-word-definition
+
+ -- Torsten Hilbrich <dictionary@myrkr.in-berlin.de>  Wed, 08 May 2013 20:21:21 +0200
+
 dictionary (1.9-1) unstable; urgency=low
 
   * Include some fixes for Emacs24 based on debian version.
