@@ -14,7 +14,8 @@ LISP_FILES=connection.el dictionary.el link.el lpath.el dictionary-init.el \
            install-package.el
 DOC_FILES=README GPL Makefile
 DEB_FILES=README.debian control copyright install.debian postinst \
-          prerm remove.debian rules changelog dirs
+          prerm remove.debian rules changelog dictionary.install \
+	  compat
 DEB_DIR=deb
 
 .SUFFIXES: .elc .el
@@ -28,7 +29,7 @@ all: $(COMPILED)
 
 .PHONY: debian
 debian:
-	[ -x debian ] || ln -s deb debian
+	@[ -x debian ] || ln -s deb debian
 	@if [ -x /usr/bin/fakeroot ]; then \
 	  dpkg-buildpackage -us -uc -rfakeroot; \
 	elif [ `id -u` -ne 0 ]; then \
@@ -94,7 +95,7 @@ dist:
 	install -d $$DESTDIR; \
 	install $(LISP_FILES) $(DOC_FILES) $$DESTDIR; \
 	mkdir $$DESTDIR/$(DEB_DIR); \
-	cd $(DEB_DIR) && install $(DEB_FILES) $$DESTDIR/$(DEB_DIR); \
+	cd $(DEB_DIR) && install -m 644 $(DEB_FILES) $$DESTDIR/$(DEB_DIR); \
 	tar czf $(CURDIR)/dictionary-$$VERSION.tar.gz -C $$DIR .; \
 	rm -r $$DIR; \
 	echo "dictionary-$$VERSION.tar.gz has been created"
