@@ -295,7 +295,7 @@ by the choice value:
   (condition-case nil
       (x-display-color-p)
     (error nil))
-  "Stores the point position while buffer display.")
+  "Determines if the Emacs has support to display color")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Basic function providing startup actions
@@ -764,18 +764,17 @@ This function knows about the special meaning of quotes (\")"
       (goto-char start)
       (while (< (point) (point-max))
 	(if (search-forward-regexp regexp nil t)
-	    (let ((match-start (match-beginning 1))
+	    (let ((match-start (match-beginning 2))
 		  (match-end (match-end 2)))
 	      (if dictionary-color-support
-		  (progn
-		    (replace-match "\\2")
-		    ;; Compensate for the replacement
-		    (let ((brace-match-length (- (match-end 1)
-						 (match-beginning 1))))
-		      (setq match-start (- (match-beginning 2)
-					   brace-match-length))
-		      (setq match-end (- (match-end 2)
-					 brace-match-length)))))
+		  ;; Compensate for the replacement
+		  (let ((brace-match-length (- (match-end 1)
+					       (match-beginning 1))))
+		    (setq match-start (- (match-beginning 2)
+					 brace-match-length))
+		    (setq match-end (- (match-end 2)
+				       brace-match-length))
+		    (replace-match "\\2")))
 	      (dictionary-mark-reference match-start match-end
 					 'dictionary-new-search
 					 word dictionary))
