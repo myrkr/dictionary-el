@@ -40,6 +40,7 @@
     (defmacro defcustom (var value doc &rest ignored)
       (list 'defvar var value doc))))
 
+(defvar dictionary-server)
 (defun dictionary-set-server-var (name value)
   (if (and (boundp 'dictionary-connection)
 	   dictionary-connection
