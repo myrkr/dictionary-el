@@ -840,7 +840,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   (dictionary-display-dictionary-line "! \"The first matching dictionary\"")
   (let* ((reply (dictionary-read-answer))
 	 (list (dictionary-simple-split-string reply "\n+")))
-    (mapcar 'dictionary-display-dictionary-line list))
+    (mapc 'dictionary-display-dictionary-line list))
   (dictionary-post-buffer))
 
 (defun dictionary-display-dictionary-line (string)
@@ -929,7 +929,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   (dictionary-display-strategy-line ". \"The servers default\"")
   (let* ((reply (dictionary-read-answer))
 	 (list (dictionary-simple-split-string reply "\n+")))
-    (mapcar 'dictionary-display-strategy-line list))
+    (mapc 'dictionary-display-strategy-line list))
   (dictionary-post-buffer))
 
 (defun dictionary-display-strategy-line (string)
@@ -994,18 +994,18 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
     (insert number " matching word" (if (equal number "1") "" "s")
 	    " found\n\n")
     (let ((result nil))
-      (mapcar (lambda (item)
-		(let* ((list (dictionary-split-string item))
-		       (dictionary (car list))
-		       (word (cadr list))
-		       (hash (assoc dictionary result)))
-		  (if dictionary
-		      (if hash
-			  (setcdr hash (cons word (cdr hash)))
-			(setq result (cons 
-				      (cons dictionary (list word)) 
-				      result))))))
-	      list)
+      (mapc (lambda (item)
+	      (let* ((list (dictionary-split-string item))
+		     (dictionary (car list))
+		     (word (cadr list))
+		     (hash (assoc dictionary result)))
+		(if dictionary
+		    (if hash
+			(setcdr hash (cons word (cdr hash)))
+		      (setq result (cons 
+				    (cons dictionary (list word)) 
+				    result))))))
+	    list)
       (dictionary-display-match-lines (reverse result)))))
 
 (defun dictionary-display-match-result (reply)
@@ -1017,38 +1017,38 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
     (insert number " matching word" (if (equal number "1") "" "s")
 	    " found\n\n")
     (let ((result nil))
-      (mapcar (lambda (item)
-		(let* ((list (dictionary-split-string item))
-		       (dictionary (car list))
-		       (word (cadr list))
-		       (hash (assoc dictionary result)))
-		  (if dictionary
-		      (if hash
-			  (setcdr hash (cons word (cdr hash)))
-			(setq result (cons 
-				      (cons dictionary (list word)) 
-				      result))))))
-	      list)
+      (mapc (lambda (item)
+	      (let* ((list (dictionary-split-string item))
+		     (dictionary (car list))
+		     (word (cadr list))
+		     (hash (assoc dictionary result)))
+		(if dictionary
+		    (if hash
+			(setcdr hash (cons word (cdr hash)))
+		      (setq result (cons 
+				    (cons dictionary (list word)) 
+				    result))))))
+	    list)
       (dictionary-display-match-lines (reverse result))))
   (dictionary-post-buffer))
 
 (defun dictionary-display-match-lines (list)
   "Display the match lines."
-  (mapcar (lambda (item)
-	    (let ((dictionary (car item))
-		  (word-list (cdr item)))
-	      (insert "Matches from " dictionary ":\n")
-	      (mapcar (lambda (word)
-			(setq word (dictionary-decode-charset word dictionary))
-			(insert "  ")
-			(link-insert-link word
-					  'dictionary-reference-face
-					  'dictionary-new-search
-					  (cons word dictionary)
-					  "Mouse-2 to lookup word")
-			(insert "\n")) (reverse word-list))
-	      (insert "\n")))
-	  list))
+  (mapc (lambda (item)
+	  (let ((dictionary (car item))
+		(word-list (cdr item)))
+	    (insert "Matches from " dictionary ":\n")
+	    (mapc (lambda (word)
+		    (setq word (dictionary-decode-charset word dictionary))
+		    (insert "  ")
+		    (link-insert-link word
+				      'dictionary-reference-face
+				      'dictionary-new-search
+				      (cons word dictionary)
+				      "Mouse-2 to lookup word")
+		    (insert "\n")) (reverse word-list))
+	    (insert "\n")))
+	list))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User callable commands
