@@ -66,8 +66,7 @@ A data structure identifing the connection is returned"
 						     server
 						     port)))
 	(process))
-    (save-excursion
-      (set-buffer process-buffer)
+    (with-current-buffer process-buffer
       (setq process (open-network-stream "connection" process-buffer
 					 server port))
       (connection-create-data process-buffer process (point-min)))))
@@ -110,8 +109,7 @@ nil: argument is no connection object
   "Send `data' to the process."
   (unless (eq (connection-status connection) 'up)
     (error "Connection is not up"))
-  (save-excursion
-    (set-buffer (connection-buffer connection))
+  (with-current-buffer (connection-buffer connection)
     (goto-char (point-max))
     (connection-set-read-point connection (point))
     (process-send-string (connection-process connection) data)))
@@ -126,8 +124,7 @@ nil: argument is no connection object
     (error "Connection is not up"))
   (let ((case-fold-search nil)
 	match-end)
-    (save-excursion
-      (set-buffer (connection-buffer connection))
+    (with-current-buffer (connection-buffer connection)
       (goto-char (connection-read-point connection))
       ;; Wait until there is enough data 
       (while (not (search-forward-regexp delimiter nil t))
