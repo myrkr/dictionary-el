@@ -680,7 +680,7 @@ This function knows about the special meaning of quotes (\")"
 
 (defun dictionary-pre-buffer ()
   "These commands are executed at the begin of a new buffer"
-  (toggle-read-only 0)
+  (setq buffer-read-only nil)
   (erase-buffer)
   (if dictionary-create-buttons
       (progn
@@ -723,7 +723,7 @@ This function knows about the special meaning of quotes (\")"
   (goto-char dictionary-marker)
   
   (set-buffer-modified-p nil)
-  (toggle-read-only 1))
+  (setq buffer-read-only t))
 
 (defun dictionary-display-search-result (reply)
   "This function starts displaying the result starting with the `reply'."
