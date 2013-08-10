@@ -1185,7 +1185,7 @@ It presents the word at point as default input and allows editing it."
   nil
   "This dictionary to lookup words for tooltips"
   :group 'dictionary
-  :type 'string)
+  :type '(choice (const :tag "None" nil) string))
 
 (defun dictionary-definition (word &optional dictionary)
   (interactive)
