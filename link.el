@@ -26,7 +26,12 @@
 ;; pressing return or clicking the button2.
 
 ;; Which each link a function and some data are associated.  Upon
-;; clicking the function is called with the data as only argument.
+;; clicking the function is called with the data as only
+;; argument. Both the function and the data are stored in text
+;; properties.
+;;
+;; link-create-link       - insert a new link for the text in the given range
+;; link-initialize-keymap - install the keybinding for selecting links
 
 (eval-when-compile
   (require 'cl))

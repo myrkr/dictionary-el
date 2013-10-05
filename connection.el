@@ -18,6 +18,11 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;; connection allows to handle TCP-based connections in client mode
+;; where text-based information are exchanged. There is special
+;; support for handling CR LF (and the usual CR LF . CR LF
+;; terminater).
+
 (eval-when-compile
   (require 'cl))
 
