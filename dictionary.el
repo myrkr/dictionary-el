@@ -1,7 +1,9 @@
-;; dictionary.el -- an interface to RFC 2229 dictionary server
+;;; dictionary.el --- Client for rfc2229 dictionary servers
 
 ;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
+;; Version: 1.10
+;; Package-Requires: ((connection "1.10") (link "1.10"))
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,6 +20,8 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;;; Commentary:
+
 ;; dictionary allows you to interact with dictionary servers. Use M-x
 ;; customize-group dictioanry to modify all user settings.
 ;;
@@ -27,6 +31,8 @@
 ;;
 ;; You can find more information in the README file of the gibhub
 ;; repository https://github.com/myrkr/dictionary-el
+
+;;; Code:
 
 (eval-when-compile
   (require 'cl))
@@ -1337,3 +1343,4 @@ It presents the word at point as default input and allows editing it."
 
 (provide 'dictionary)
 
+;;; dictionary.el ends here
