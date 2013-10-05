@@ -1,7 +1,8 @@
-;;; connection.el -- handling a tcp based connection
+;;; connection.el --- TCP-based client connection
 
 ;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: network
+;; Version: 1.10
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,10 +19,14 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;;; Commentary:
+
 ;; connection allows to handle TCP-based connections in client mode
 ;; where text-based information are exchanged. There is special
 ;; support for handling CR LF (and the usual CR LF . CR LF
 ;; terminater).
+
+;;; Code:
 
 (eval-when-compile
   (require 'cl))
@@ -151,3 +156,4 @@ nil: argument is no connection object
   (connection-read connection "\015?\012[.]\015?\012"))
 
 (provide 'connection)
+;;; connection.el ends here
