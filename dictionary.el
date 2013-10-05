@@ -1,6 +1,6 @@
 ;; dictionary.el -- an interface to RFC 2229 dictionary server
 
-;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
 
 ;; This file is free software; you can redistribute it and/or modify

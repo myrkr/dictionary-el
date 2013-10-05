@@ -1,6 +1,6 @@
 ;;; link.el -- putting clickable links into the buffer
 
-;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: interface, hypermedia
 
 ;; This file is free software; you can redistribute it and/or modify

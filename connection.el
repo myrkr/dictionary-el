@@ -1,6 +1,6 @@
 ;;; connection.el -- handling a tcp based connection
 
-;; Author: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: network
 
 ;; This file is free software; you can redistribute it and/or modify

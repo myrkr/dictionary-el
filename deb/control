@@ -1,7 +1,7 @@
 Source: dictionary
 Section: unofficial
 Priority: optional
-Maintainer: Torsten Hilbrich <dictionary@myrkr.in-berlin.de>
+Maintainer: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 Build-Depends: dpkg-dev
 Standards-Version: 3.2.1
 
