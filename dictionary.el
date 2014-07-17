@@ -415,6 +415,8 @@ by the choice value:
   ;; shift-tabs normally is supported on window systems only, but
   ;; I do not enforce it
   (define-key dictionary-mode-map [(shift tab)] 'dictionary-prev-link)
+  (define-key dictionary-mode-map "\e\t" 'dictionary-prev-link)
+  (define-key dictionary-mode-map [backtab] 'dictionary-prev-link)
   
   (define-key dictionary-mode-map "n" 'dictionary-next-link)
   (define-key dictionary-mode-map "p" 'dictionary-prev-link)
