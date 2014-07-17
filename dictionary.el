@@ -370,10 +370,10 @@ by the choice value:
   "Create a new dictonary buffer and install dictionary-mode"
   (interactive)
   (let ((buffer (or (and dictionary-use-single-buffer 
-			 (get-buffer "*Dictionary buffer*"))
-		    (generate-new-buffer "*Dictionary buffer*")))
-	(window-configuration (current-window-configuration))
-	(selected-window (frame-selected-window)))
+                         (get-buffer "*Dictionary*"))
+                    (generate-new-buffer "*Dictionary*")))
+        (window-configuration (current-window-configuration))
+        (selected-window (frame-selected-window)))
     
     (switch-to-buffer-other-window buffer)
     (dictionary-mode)
