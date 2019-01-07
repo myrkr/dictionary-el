@@ -219,6 +219,16 @@ by the choice value:
 (if (fboundp 'defface)
     (progn
       
+      (defface dictionary-word-definition-face
+	'((((supports '(:family "DejaVu Serif")))
+	   (:family "DejaVu Serif"))
+	  (((type x))
+	   (:font "Sans Serif"))
+	  (t
+	   (:font "default")))
+	"The face that is used for displaying the definition of the word."
+	:group 'dictionary)
+
       (defface dictionary-word-entry-face
 	'((((type x))
 	   (:italic t))
@@ -780,6 +790,7 @@ This function knows about the special meaning of quotes (\")"
   (let ((start (point)))
     (insert (dictionary-decode-charset reply dictionary))
     (insert "\n\n")
+    (put-text-property start (point) 'face 'dictionary-word-definition-face)
     (let ((regexp "\\({+\\)\\([^ '\"][^}]*\\)\\(}+\\)"))
       (goto-char start)
       (while (< (point) (point-max))
