@@ -220,7 +220,7 @@ by the choice value:
     (progn
       
       (defface dictionary-word-definition-face
-	'((((supports '(:family "DejaVu Serif")))
+	'((((supports (:family "DejaVu Serif")))
 	   (:family "DejaVu Serif"))
 	  (((type x))
 	   (:font "Sans Serif"))
