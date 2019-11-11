@@ -7,5 +7,6 @@ deb/dictionary.debhelper.log
 deb/dictionary.substvars
 deb/dictionary/
 deb/files
+deb/.debhelper/
 dictionary.elc
 link.elc
