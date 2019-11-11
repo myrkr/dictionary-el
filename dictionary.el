@@ -436,6 +436,18 @@ by the choice value:
   
   (link-initialize-keymap dictionary-mode-map))
 
+(defmacro dictionary-reply-code (reply)
+  "Return the reply code stored in `reply'."
+  (list 'get reply ''reply-code))
+
+(defmacro dictionary-reply (reply)
+  "Return the string reply stored in `reply'."
+  (list 'get reply ''reply))
+
+(defmacro dictionary-reply-list (reply)
+  "Return the reply list stored in `reply'."
+  (list 'get reply ''reply-list))
+
 (defun dictionary-check-connection ()
   "Check if there is already a connection open"
   (if (not (and dictionary-connection
@@ -559,18 +571,6 @@ This function knows about the special meaning of quotes (\")"
       (put answer 'reply-list reply-list)
       (put answer 'reply-code (string-to-number (car reply-list)))
       answer)))
-
-(defmacro dictionary-reply-code (reply)
-  "Return the reply code stored in `reply'."
-  (list 'get reply ''reply-code))
-
-(defmacro dictionary-reply (reply)
-  "Return the string reply stored in `reply'."
-  (list 'get reply ''reply))
-
-(defmacro dictionary-reply-list (reply)
-  "Return the reply list stored in `reply'."
-  (list 'get reply ''reply-list))
 
 (defun dictionary-read-answer ()
   "Read an answer delimited by a . on a single line"
