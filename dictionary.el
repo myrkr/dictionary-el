@@ -1233,6 +1233,8 @@ It presents the word at point as default input and allows editing it."
 	(require 'balloon-help)
       (error nil))))
 
+(make-variable-buffer-local 'dictionary-balloon-help-extent)
+
 (if dictionary-use-balloon-help
     (progn
 
@@ -1260,8 +1262,6 @@ It presents the word at point as default input and allows editing it."
 
 (defvar dictionary-balloon-help-extent nil
   "The extent for activating the balloon help")
-
-(make-variable-buffer-local 'dictionary-balloon-help-extent)
 
 ;;;###autoload
 (defun dictionary-tooltip-mode (&optional arg)
