@@ -2,8 +2,8 @@
 
 ;; Author: Torsten Hilbrich <torsten.hilbrich@gmx.net>
 ;; Keywords: interface, dictionary
-;; Version: 1.10
-;; Package-Requires: ((connection "1.10") (link "1.10"))
+;; Version: 1.11
+;; Package-Requires: ((connection "1.11") (link "1.11"))
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

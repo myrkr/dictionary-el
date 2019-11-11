@@ -1,3 +1,19 @@
+dictionary (1.11-1) unstable; urgency=medium
+
+  * Fixing some warnings about placement of definitions.
+  * Add support for customizing faces.
+  * Name the buffer "*Dictionary*", avoiding the space.
+  * Place some meta data directly into the package.
+  * Add some package support.
+  * Fix type for dictionary-server, allowing the nil value.
+  * Declare variable dictionary-server.
+  * Prefer mapc over mapcar if result is not needed.
+  * Avoid interactive-only function togle-read-only.
+  * Avoid deprecated function proccess-kill-without-query.
+  * Prefer with-current-buffer over of a combination of save-excursion and set-buffer.
+
+ -- Torsten Hilbrich <torsten.hilbrich@gmx.net>  Mon, 11 Nov 2019 05:34:01 +0100
+
 dictionary (1.10-1) unstable; urgency=low
 
   * Add some fixes sent by Reuben Thomas
