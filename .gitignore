@@ -2,7 +2,6 @@ dictionary-*.tar.gz
 debian
 build
 connection.elc
-deb/compat
 deb/dictionary.debhelper.log
 deb/dictionary.substvars
 deb/dictionary/
