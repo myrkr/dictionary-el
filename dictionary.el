@@ -1080,6 +1080,14 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 	    (insert "\n")))
 	list))
 
+;; Returns a sensible default for dictionary-search:
+;; - if region is active returns its contents
+;; - otherwise return the word near the point
+(defun dictionary-search-default ()
+  (if (use-region-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (current-word t)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User callable commands
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1089,7 +1097,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
   "Search the `word' in `dictionary' if given or in all if nil.  
 It presents the word at point as default input and allows editing it."
   (interactive
-   (list (let ((default (current-word t)))
+   (list (let ((default (dictionary-search-default)))
            (read-string (if default
                             (format "Search word (%s): " default)
                           "Search word: ")
