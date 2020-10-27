@@ -41,6 +41,7 @@
 (require 'custom)
 (require 'connection)
 (require 'link)
+(require 'thingatpt)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Stuff for customizing.
@@ -1121,7 +1122,7 @@ It presents the word at point as default input and allows editing it."
 (defun dictionary-lookup-definition ()
   "Unconditionally lookup the word at point."
   (interactive)
-  (dictionary-new-search (cons (current-word) dictionary-default-dictionary)))
+  (dictionary-new-search (cons (thing-at-point 'word t) dictionary-default-dictionary)))
 
 (defun dictionary-previous ()
   "Go to the previous location in the current buffer"
@@ -1167,7 +1168,7 @@ It presents the word at point as default input and allows editing it."
   (let ((word (save-window-excursion
 		(save-excursion
 		  (mouse-set-point event)
-		  (current-word)))))
+		  (thing-at-point 'word t)))))
     (selected-window)
     (dictionary-popup-matching-words word)))
 
@@ -1177,7 +1178,7 @@ It presents the word at point as default input and allows editing it."
   (interactive)
   (unless (functionp 'popup-menu)
     (error "Sorry, popup menus are not available in this emacs version"))
-  (dictionary-do-matching (or word (current-word))
+  (dictionary-do-matching (or word (thing-at-point 'word t))
 			  dictionary-default-dictionary
 			  dictionary-default-popup-strategy
 			  'dictionary-process-popup-replies))
@@ -1260,7 +1261,7 @@ It presents the word at point as default input and allows editing it."
       (let ((word (save-window-excursion
 		    (save-excursion
 		      (goto-char dictionary-balloon-help-position)
-		      (current-word)))))
+		      (thing-at-point 'word t)))))
 	(let ((definition
 		(dictionary-definition word dictionary-tooltip-dictionary)))
 	  (if definition
@@ -1319,7 +1320,7 @@ It presents the word at point as default input and allows editing it."
       (let ((word (save-window-excursion
  		    (save-excursion
  		      (mouse-set-point event)
- 		      (current-word)))))
+ 		      (thing-at-point 'word t)))))
  	(let ((definition 
  		(dictionary-definition word dictionary-tooltip-dictionary)))
  	  (if definition 
