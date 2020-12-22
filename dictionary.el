@@ -39,6 +39,7 @@
 
 (require 'easymenu)
 (require 'custom)
+(require 'imenu)
 (require 'connection)
 (require 'link)
 
@@ -369,6 +370,14 @@ by the choice value:
   
   (make-local-variable 'dictionary-default-dictionary)
   (make-local-variable 'dictionary-default-strategy)
+
+  ;; User can jump to dictionary quickly
+  (setq imenu-generic-expression `((nil
+                                    ,(concat "^From "
+                                             (regexp-quote dictionary-description-open-delimiter)
+                                             "\\(.+\\)"
+                                             (regexp-quote dictionary-description-close-delimiter))
+                                    1)))
   
   (if (featurep 'xemacs)
       (make-local-hook 'kill-buffer-hook))
