@@ -185,6 +185,12 @@ by the choice value:
   :group 'dictionary
   :type 'boolean)
 
+(defcustom dictionary-restore-window-configuration
+  t
+  "Should the window configuration be restored when a dictionary buffer is killed?"
+  :group 'dictionary
+  :type 'boolean)
+
 (defcustom dictionary-description-open-delimiter
   ""
   "The delimiter to display in front of the dictionaries description"
@@ -524,7 +530,8 @@ by the choice value:
 	(let ((configuration dictionary-window-configuration)
 	      (selected-window dictionary-selected-window))
 	  (kill-buffer (current-buffer))
-	  (set-window-configuration configuration)
+	  (when dictionary-restore-window-configuration
+            (set-window-configuration configuration))
 	  (select-window selected-window)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
