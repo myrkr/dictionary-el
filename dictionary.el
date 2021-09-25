@@ -185,6 +185,12 @@ by the choice value:
   :group 'dictionary
   :type 'boolean)
 
+(defcustom dictionary-buffer-display-function
+  'switch-to-buffer-other-window
+  "Function to call to display new dictionary buffers."
+  :group 'dictionary
+  :type 'function)
+
 (defcustom dictionary-description-open-delimiter
   ""
   "The delimiter to display in front of the dictionaries description"
@@ -385,7 +391,7 @@ by the choice value:
         (window-configuration (current-window-configuration))
         (selected-window (frame-selected-window)))
     
-    (switch-to-buffer-other-window buffer)
+    (funcall dictionary-buffer-display-function buffer)
     (dictionary-mode)
     
     (make-local-variable 'dictionary-window-configuration)
