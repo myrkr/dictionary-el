@@ -185,6 +185,12 @@ by the choice value:
   :group 'dictionary
   :type 'boolean)
 
+(defcustom dictionary-always-create-new-buffer
+  nil
+  "Should new searches always create new buffers?"
+  :group 'dictionary
+  :type 'boolean)
+
 (defcustom dictionary-description-open-delimiter
   ""
   "The delimiter to display in front of the dictionaries description"
@@ -506,7 +512,8 @@ by the choice value:
 
 (defun dictionary-ensure-buffer ()
   "If current buffer is not a dictionary buffer, create a new one."
-  (unless (dictionary-mode-p)
+  (when (or (not (dictionary-mode-p))
+            dictionary-always-create-new-buffer)
     (dictionary)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
