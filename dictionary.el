@@ -693,8 +693,7 @@ This function knows about the special meaning of quotes (\")"
 	(progn
 	  (unless nomatching
 	    (beep)
-	    (insert "Word not found, maybe you are looking "
-		    "for one of these words\n\n")
+            (insert "Word ‘" word "’ not found\n\n")
 	    (dictionary-do-matching word
 				    dictionary
 				    "."
